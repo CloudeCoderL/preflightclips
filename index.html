@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PreflightClips — check your clip against the campaign brief</title>
+<meta name="description" content="Pick the campaign, paste your caption, add the file. See what would get your clip rejected before you post. Free, runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+/* The page is a pre-flight checklist. Left: what you bring (campaign, caption, file). Right: the checklist sheet,
+   which stays in view while you type. One loud element: the status band at the top of the sheet.
+   Signal yellow = waiting on you, red = hold, green = cleared. Rows use the dotted leader of a paper checklist. */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#14213D; --muted:#586278; --line:#D3D9E2; --field:#F6F8FA;
+  --signal:#FFC700; --on-signal:#14213D;
+  --go:#0E7A4A; --stop:#C4283C; --band-go:#0E7A4A; --band-stop:#C4283C;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Barlow","Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0E1524; --surface:#172038; --ink:#E9EDF6; --muted:#9AA5BC; --line:#2C3752; --field:#111A2E;
+    --go:#49C98B; --stop:#FF8394; color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.page{max-width:1120px;margin-inline:auto;padding:24px 16px 96px}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
+.brand i{width:26px;height:26px;background:var(--signal);color:var(--on-signal);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:15px;border-radius:4px}
+.top small{color:var(--muted);font-size:14px}
+
+.hero{margin:40px 0 32px;max-width:820px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(38px,7.4vw,68px);line-height:.98;letter-spacing:-.005em;text-wrap:balance}
+.lede{margin-top:16px;font-size:18px;color:var(--muted);max-width:60ch}
+
+.work{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start}
+@media (min-width:920px){
+  .work{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:32px}
+  .sheet{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}
+}
+
+.inputs{display:flex;flex-direction:column;gap:24px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field > label, .field > .label{font-weight:600;font-size:15px}
+.field .opt{font-weight:400;color:var(--muted)}
+select,textarea,button,input[type=file],input[type=url],input[type=text],input[type=number]{font:inherit;color:var(--ink)}
+select,textarea,input[type=url],input[type=text],input[type=number]{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:11px 12px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:190px;font-family:var(--mono);font-size:14px;line-height:1.5}
+.hint{font-size:14px;color:var(--muted)}
+.linkish{align-self:flex-start;background:none;border:0;padding:0;color:var(--ink);font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:15px}
+/* "Your own brief": the brief's rules typed into plain fields. Sits on the field colour so it reads as one form. */
+.builder{display:grid;grid-template-columns:minmax(0,1fr);gap:14px 16px;padding:16px;border:1px solid var(--line);border-radius:6px;background:var(--field)}
+.builder label{display:flex;flex-direction:column;justify-content:flex-end;gap:5px;font-size:14px;font-weight:500;min-width:0}
+.builder input,.builder textarea,.builder select{font-weight:400}
+.builder label span{font-weight:400;color:var(--muted)}
+.builder textarea{min-height:68px;font-family:var(--body);font-size:15px}
+.builder .inline{flex-direction:row;justify-content:flex-start;align-items:center;gap:8px;font-weight:400}
+.builder .inline input{width:18px;height:18px;margin:0;accent-color:var(--go);flex:none}
+.builder .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.builder .wide,.builder .actions{grid-column:1 / -1}
+@media (min-width:560px){ .builder{grid-template-columns:1fr 1fr} }
+.facts{display:flex;flex-direction:column;gap:2px;font-size:14px;color:var(--muted)}
+.facts b{color:var(--ink);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 14px;cursor:pointer;font-size:15px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.actions{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+.btn{border-radius:6px;padding:9px 16px;cursor:pointer;border:1px solid var(--line);background:var(--surface);font-weight:500}
+.btn.primary{background:var(--signal);border-color:var(--signal);color:var(--on-signal);font-weight:600}
+input[type=file]{font-size:14px;max-width:100%}
+input[type=file]::file-selector-button{font:inherit;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 14px;margin-right:12px;cursor:pointer}
+
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.band{padding:18px 20px 16px;background:var(--signal);color:var(--on-signal)}
+/* the status colours stay the same in both themes: white text has to stay readable on them */
+.band.hold{background:var(--band-stop);color:#fff}
+.band.clear{background:var(--band-go);color:#fff}
+.band .camp{font-size:14px;font-weight:500;opacity:.85}
+.band .state{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,40px);line-height:1.02;margin-top:2px}
+.band .sum{font-size:15px;margin-top:6px}
+.meter{display:flex;gap:2px;margin-top:14px}
+.meter i{flex:1;height:6px;border-radius:1px;background:currentColor;opacity:.22}
+.meter i.done{opacity:1}
+.sheet-body{padding:6px 20px 18px}
+.sheet h3{font-size:15px;font-weight:600;margin:18px 0 4px}
+.sheet h3 span{font-weight:400;color:var(--muted)}
+.sub{font-size:13px;color:var(--muted);margin:12px 0 0;font-weight:500}
+.checks{list-style:none;margin:0;padding:0}
+.check{padding:9px 0;border-top:1px solid var(--line)}
+.checks .check:first-child{border-top:0}
+.rule{display:flex;align-items:baseline;gap:8px}
+.rule .t{flex:0 1 auto;min-width:0}
+.rule .dots{flex:1 1 20px;min-width:20px;border-bottom:2px dotted var(--line);transform:translateY(-4px)}
+.rule .st{flex:none;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase}
+.ok .st{color:var(--go)} .fail .st{color:var(--stop)} .wait .st{color:var(--muted)}
+.why{font-size:14px;color:var(--muted);margin-top:1px}
+.fail .why{color:var(--stop)}
+.tick{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start}
+.tick input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--go)}
+.tick label{cursor:pointer}
+.tick input:checked + label{color:var(--muted)}
+/* the countdown under the "link submitted" box: plain while there is time, red once the window has closed */
+.tick .why{grid-column:2;color:var(--ink);font-weight:500}
+.tick.late .why{color:var(--stop)}
+.tick input:checked ~ .why{color:var(--muted);font-weight:400}
+
+.about{margin-top:56px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px 40px;max-width:920px}
+@media (min-width:720px){ .about{grid-template-columns:1fr 1fr} }
+.about h2{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.1;margin-bottom:8px}
+.about ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--muted)}
+footer{margin-top:40px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px;max-width:80ch}
+
+/* Phone: the sheet sits below the inputs, so a bar at the bottom carries the status while you type. */
+.dock{position:fixed;left:0;right:0;bottom:0;display:none;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--signal);color:var(--on-signal);font-weight:600}
+.dock.hold{background:var(--band-stop);color:#fff} .dock.clear{background:var(--band-go);color:#fff}
+.dock button{font:inherit;font-weight:600;background:transparent;color:inherit;border:1.5px solid currentColor;border-radius:6px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+@media (max-width:919px){ .dock.show{display:flex} }
+[hidden]{display:none !important}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <div class="brand"><i aria-hidden="true">✓</i>PreflightClips</div>
+    <small>Free. No sign-up. Nothing leaves your device.</small>
+  </header>
+
+  <div class="hero">
+    <h1>Check your clip against the campaign brief before you post</h1>
+    <p class="lede">Pick the campaign or type in the rules from your own brief. Paste the caption, add the file. The rules software can check are checked for you. The rest becomes a list you tick.</p>
+  </div>
+
+  <main class="work">
+    <div class="inputs">
+      <div class="field">
+        <label for="campaign">Campaign</label>
+        <select id="campaign"></select>
+        <button type="button" id="own-open" class="linkish">Campaign not listed? Build the checklist from your brief</button>
+        <div id="builder" class="builder" hidden>
+          <label class="wide">Campaign name <input type="text" id="b-n" maxlength="80" placeholder="Summer launch clipping" autocomplete="off"></label>
+          <label>Account to tag <input type="text" id="b-t" maxlength="40" placeholder="@brand" autocomplete="off" spellcheck="false"></label>
+          <label>Hashtag limit <span>besides the ad disclosure</span><input type="number" id="b-h" min="0" max="30" inputmode="numeric" placeholder="3"></label>
+          <label class="wide">Phrases the caption must include <span>one per line</span><textarea id="b-p" spellcheck="false" placeholder="Out now&#10;Link in bio"></textarea></label>
+          <label>Ad disclosure <span>any one of these counts</span><input type="text" id="b-d" maxlength="120" placeholder="#ad, #sponsored" autocomplete="off" spellcheck="false"></label>
+          <label>Where the disclosure goes
+            <select id="b-w"><option value="any">Anywhere in the caption</option><option value="line">On its own line</option><option value="first">Own line, and the first hashtag</option></select></label>
+          <label class="wide">Words the caption must not use <span>one per line</span><textarea id="b-x" spellcheck="false" placeholder="gameplay"></textarea></label>
+          <label>Clip length, seconds
+            <span class="pair"><input type="number" id="b-lo" min="1" max="3600" inputmode="numeric" placeholder="from" aria-label="Shortest length in seconds"><input type="number" id="b-hi" min="1" max="3600" inputmode="numeric" placeholder="to" aria-label="Longest length in seconds"></span></label>
+          <label>Minutes to submit the link <span>after posting</span><input type="number" id="b-s" min="1" max="1440" inputmode="numeric" placeholder="30"></label>
+          <label class="inline"><input type="checkbox" id="b-a"> Vertical 9:16</label>
+          <label class="inline"><input type="checkbox" id="b-k"> No black bars</label>
+          <label class="wide">Things only a person can check <span>one per line</span><textarea id="b-m" placeholder="Logo is visible in every clip&#10;Original audio only, no added music"></textarea></label>
+          <div class="actions">
+            <button type="button" id="own-link" class="btn primary">Copy a link to this checklist</button>
+            <button type="button" id="own-clear" class="btn">Clear</button>
+            <span id="own-status" class="hint" role="status"></span>
+          </div>
+          <p class="hint wide">Send the link to every clipper on the campaign: they open it and get this checklist, already filled in. The rules travel inside the link. Nothing is stored on a server.</p>
+        </div>
+        <div id="platforms" class="seg" role="group" aria-label="Platform you are posting to" hidden></div>
+        <div id="facts" class="facts"></div>
+        <p id="meta" class="hint"></p>
+      </div>
+
+      <div class="field">
+        <label for="caption">Caption</label>
+        <textarea id="caption" placeholder="Paste the caption exactly as it will appear on TikTok, Reels or Shorts" spellcheck="false"></textarea>
+        <div class="actions">
+          <button id="sample" type="button" class="btn primary">Try a sample caption</button>
+          <button id="copy" type="button" class="btn">Copy caption</button>
+          <span id="copy-status" class="hint" role="status"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="video">Video file <span class="opt">(optional)</span></label>
+        <input type="file" id="video" accept="video/*" aria-describedby="video-status">
+        <p id="video-status" class="hint">Add the file to check length, frame shape, resolution and black bars. It is read on your device and never uploaded.</p>
+      </div>
+
+      <div class="field">
+        <label for="post">Link to the live post <span class="opt">(after you post)</span></label>
+        <input type="url" id="post" placeholder="https://www.tiktok.com/@you/video/…" inputmode="url" autocomplete="off" spellcheck="false" aria-describedby="post-status">
+        <p id="post-status" class="hint"></p>
+      </div>
+    </div>
+
+    <aside class="sheet" id="sheet" aria-label="Checklist">
+      <div id="band" class="band" role="status" aria-live="polite">
+        <div id="camp" class="camp"></div>
+        <div id="state" class="state"></div>
+        <div id="sum" class="sum"></div>
+        <div id="meter" class="meter" aria-hidden="true"></div>
+      </div>
+      <div class="sheet-body">
+        <div id="fail-box"><h3>Fix these first</h3><ul id="fails" class="checks"></ul></div>
+        <div id="ok-box"><h3>Passed</h3><ul id="oks" class="checks"></ul></div>
+        <div id="wait-box"><h3>Checked for you <span>once the caption is in</span></h3><ul id="waits" class="checks"></ul></div>
+        <div id="manual-box"><h3>Confirm yourself <span>software cannot see these</span></h3><div id="manual"></div></div>
+      </div>
+    </aside>
+  </main>
+
+  <section class="about">
+    <div>
+      <h2>Checked for you</h2>
+      <ul>
+        <li>Caption rules: required tags and phrases, where the ad disclosure sits, hashtag limits, banned words.</li>
+        <li>The file: length, 9:16 frame, resolution, black bars. It is read on your device.</li>
+        <li>How many views the clip needs before it pays anything.</li>
+        <li>After you post: how many minutes are left to submit the link. The publish time is read from the link itself.</li>
+        <li>Any campaign: type in what your brief asks for and get a link to that checklist for your whole team.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Left to you</h2>
+      <ul>
+        <li>What only a person can judge: the logo, the audio, whether the footage is from the approved source, draft approval.</li>
+        <li>These show up as a list to tick, in the brief's own words, so nothing is forgotten.</li>
+        <li>A clean checklist is not an approval. The campaign team makes the final call.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>Campaign rules are summarised from the public briefs. Always read the full brief; if the two disagree, the brief wins.</span>
+    <span>PreflightClips is an independent tool and is not affiliated with Content Rewards, Whop or any brand named here.</span>
+  </footer>
+</div>
+
+<div id="dock" class="dock" role="status"><span id="dock-text"></span><button id="dock-go" type="button">See checklist</button></div>
+
+<script>
+/* Pure checking logic: no DOM, no network. Tested separately with node.
+   Source of truth. `python3 checker/sync_logic.py` copies it into checker/index.html; site/build.py reads it from there. */
+var Logic = (function(){
+  function norm(s){ return String(s||'').toLowerCase().replace(/[“”«»"]/g,'"').replace(/[‘’]/g,"'").replace(/\s+/g,' ').trim(); }
+  function lines(t){ return String(t||'').split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean); }
+  function hashtags(t){ return String(t||'').match(/#[\p{L}\p{N}_]+/gu) || []; }
+  function lowerSet(a){ return (a||[]).map(function(x){ return String(x).toLowerCase(); }); }
+  function esc(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+  /* A value that is a whole hashtag must match a whole hashtag (#ad is not found inside #adventure). */
+  function has(caption, c, value){
+    if (/^#[\p{L}\p{N}_]+$/u.test(String(value))) return lowerSet(hashtags(caption)).indexOf(String(value).toLowerCase()) >= 0;
+    return c.indexOf(norm(value)) >= 0;
+  }
+  var CAPTION = ['contains','contains_all','any_of','mention','one_of_line','first_hashtag','max_extra_hashtags','not_contains','starts_with','ends_with','lowercase'];
+  var VIDEO = ['video_aspect','video_duration','video_min_side','video_no_bars'];
+  /* Soft rules: the brief accepts the caption OR something else (on-screen text, a platform label).
+     Found in the caption = passed; not found = the person confirms the other way by hand. */
+  var SOFT = ['caption_or_other'];
+  /* Deep rules need video.deep: the report videocheck.py makes on the PC (text in the picture, speech, logo, sound, codecs).
+     Without the report they stay manual. */
+  var DEEP = ['screen_text','screen_text_all','screen_text_lowercase','screen_captions','screen_text_clear','screen_text_zone',
+              'speech_language','video_codec','video_logo','video_original_audio'];
+  /* Rules about the live post. They stay on the manual list (only the person knows whether the link was submitted),
+     but the page can time them with submitWindow(). */
+  var POST = ['submit_window'];
+  /* A TikTok or Instagram link carries the moment the post was created inside its id, so nothing has to be fetched.
+     TikTok: the top 32 bits of the video id are Unix seconds. Instagram: the shortcode is the media id written in base 64,
+     and the bits above the lowest 23 are milliseconds since 2011-08-24T21:07:01.721Z.
+     Returns {platform, id, ms}; ms is null when the link is recognised but holds no time (short links, YouTube). */
+  function postInfo(url){
+    var u = String(url || '').trim(), m;
+    try {
+      if ((m = u.match(/tiktok\.com\/[^?#]*\/(?:video|photo)\/(\d{15,22})/i)))
+        return { platform: 'TikTok', id: m[1], ms: Number(BigInt(m[1]) >> BigInt(32)) * 1000 };
+      if ((m = u.match(/instagram\.com\/(?:[^\/?#]+\/)?(?:reels?|p|tv)\/([A-Za-z0-9_-]{5,})/i))){
+        var abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_', n = BigInt(0), code = m[1].slice(0, 11);
+        for (var i = 0; i < code.length; i++) n = n * BigInt(64) + BigInt(abc.indexOf(code[i]));
+        return { platform: 'Instagram', id: m[1], ms: Number(n >> BigInt(23)) + 1314220021721 };
+      }
+      if (/tiktok\.com|instagram\.com/i.test(u)) return { platform: /tiktok/i.test(u) ? 'TikTok' : 'Instagram', id: null, ms: null };
+      if (/youtube\.com\/shorts\/|youtu\.be\//i.test(u)) return { platform: 'YouTube', id: null, ms: null };
+    } catch (e) {}
+    return null;
+  }
+  /* The submission window of a submit_window rule for a given post link, at the moment `now` (ms).
+     Returns {posted, end, left, open}: times in ms, `left` in whole minutes (0 once closed). Null when the link holds no usable time. */
+  function submitWindow(item, url, now){
+    var info = postInfo(url), mins = Number(item && item.minutes);
+    if (!info || !info.ms || !(mins > 0)) return null;
+    /* a time in the future or before 2016 means the id was not what we think it is */
+    if (info.ms > now + 600000 || info.ms < 1451606400000) return null;
+    var end = info.ms + mins * 60000;
+    return { posted: info.ms, end: end, left: Math.max(0, Math.ceil((end - now) / 60000)), open: now < end };
+  }
+  function ok(note){ return {ok:true, note:note}; }
+  function fail(note){ return {ok:false, note:note}; }
+
+  function runCaption(item, caption){
+    var c = norm(caption), tags = hashtags(caption), v = item.value, vs = item.values || [];
+    switch(item.kind){
+      case 'contains':
+        return has(caption, c, v) ? ok('Found: ' + v) : fail('Missing from the caption: ' + v);
+      case 'contains_all':
+        var miss = vs.filter(function(x){ return !has(caption, c, x); });
+        return miss.length ? fail('Missing: ' + miss.join(', ')) : ok('All present');
+      case 'any_of':
+        var hit = vs.filter(function(x){ return has(caption, c, x); });
+        return hit.length ? ok('Found: ' + hit[0]) : fail('Needs one of: ' + vs.join(', '));
+      case 'mention':
+        var h = String(v||'').replace(/^@/,'');
+        return new RegExp('(^|[^\\w.])@' + esc(h) + '(?![\\w.])','i').test(String(caption||'')) ? ok('Tagged @' + h) : fail('No @' + h + ' tag');
+      case 'one_of_line':
+        var ls = lines(caption).map(function(l){ return l.toLowerCase(); }), want = lowerSet(vs);
+        return ls.some(function(l){ return want.indexOf(l) >= 0; }) ? ok('On its own line') : fail('Needs its own line: ' + vs.join(' or '));
+      case 'first_hashtag':
+        if (!tags.length) return fail('The caption has no hashtags');
+        return lowerSet(vs).indexOf(tags[0].toLowerCase()) >= 0 ? ok('First hashtag: ' + tags[0]) : fail('First hashtag is ' + tags[0] + ', it should be ' + vs.join(' or '));
+      case 'max_extra_hashtags':
+        var ign = lowerSet(vs), extra = tags.filter(function(t){ return ign.indexOf(t.toLowerCase()) < 0; });
+        return extra.length <= item.n ? ok('Other hashtags: ' + extra.length + ' of ' + item.n) : fail(extra.length + ' other hashtags, the limit is ' + item.n);
+      case 'not_contains':
+        return new RegExp('(^|[^\\p{L}])' + esc(norm(v)) + '(?![\\p{L}])','u').test(c) ? fail('The caption uses a banned word: ' + v) : ok('Does not use: ' + v);
+      case 'starts_with':
+        return c.indexOf(norm(v)) === 0 ? ok('Starts with: ' + v) : fail('The caption must start with: ' + v);
+      case 'ends_with':
+        var e = norm(v);
+        return c.slice(-e.length) === e ? ok('Ends with: ' + v) : fail('The caption must end with: ' + v);
+      case 'lowercase':
+        var up = String(caption||'').match(/\p{Lu}/gu);
+        return up ? fail('Capital letters found: ' + up.length) : ok('No capital letters');
+    }
+    return null;
+  }
+
+  /* video = {w, h, dur} read from the file's own metadata */
+  function runVideo(item, video){
+    var size = video.w + '×' + video.h, sec = Math.round(video.dur * 10) / 10;
+    switch(item.kind){
+      case 'video_aspect':
+        var p = String(item.value || '9:16').split(':'), want = Number(p[0]) / Number(p[1]);
+        return Math.abs(video.w / video.h - want) <= 0.02 ? ok('Frame ' + size) : fail('Frame is ' + size + ', needs ' + (item.value || '9:16'));
+      case 'video_duration':
+        if (item.min != null && video.dur < item.min - 0.05) return fail('Length is ' + sec + ' s, minimum is ' + item.min);
+        if (item.max != null && video.dur > item.max + 0.05) return fail('Length is ' + sec + ' s, maximum is ' + item.max);
+        return ok('Length ' + sec + ' s');
+      case 'video_min_side':
+        var side = Math.min(video.w, video.h);
+        return side >= item.n ? ok('Short side ' + side + ' px') : fail('Short side is ' + side + ' px, minimum is ' + item.n);
+      case 'video_no_bars':
+        if (!video.bars) return null;
+        var pct = Math.round(Math.max(video.bars.tb, video.bars.lr) * 100);
+        return pct < 4 ? ok('No black bars') : fail('Black bars take ' + pct + '% of the frame');
+    }
+    return null;
+  }
+
+  function key(x){ return String(x||'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,''); }
+  /* Is `needle` inside `hay`, ignoring case, spaces and punctuation, and forgiving a few misread letters (1 per 8). */
+  function near(hay, needle){
+    var h = key(hay), n = key(needle), i, j;
+    if (!n) return false;
+    if (h.indexOf(n) >= 0) return true;
+    var maxErr = Math.floor(n.length / 8);
+    if (!maxErr || !h) return false;
+    var prev = [], cur;
+    for (j = 0; j <= h.length; j++) prev[j] = 0;
+    for (i = 1; i <= n.length; i++){
+      cur = [i];
+      for (j = 1; j <= h.length; j++) cur[j] = Math.min(prev[j-1] + (n[i-1] === h[j-1] ? 0 : 1), prev[j] + 1, cur[j-1] + 1);
+      prev = cur;
+    }
+    return Math.min.apply(null, prev) <= maxErr;
+  }
+  /* Seconds a phrase stays in the picture, from the text report. */
+  function heldSec(tx, phrase){
+    var n = (tx.frames || []).filter(function(f){ return near(f.text, phrase); }).length;
+    return Math.round(n * (tx.step || 0) * 10) / 10;
+  }
+  function r1(x){ return Math.round(x * 10) / 10; }
+
+  /* d = video.deep. Returns null when the part of the report a rule needs is missing. */
+  function runDeep(item, d){
+    var tx = d.text, vs = item.values || [], need = item.seconds || 0;
+    switch(item.kind){
+      case 'screen_text':
+        if (!tx || !tx.frames) return null;
+        var best = null;
+        vs.forEach(function(x){ var sec = heldSec(tx, x); if (sec > 0 && (!best || sec > best.s)) best = { v: x, s: sec }; });
+        if (!best) return fail('No such text on screen: ' + vs.join(' or '));
+        return best.s >= need ? ok('On screen: ' + best.v + ', ' + best.s + ' s') : fail('"' + best.v + '" is on screen for ' + best.s + ' s, minimum is ' + need);
+      case 'screen_text_all':
+        if (!tx || !tx.frames) return null;
+        var missT = vs.filter(function(x){ var sec = heldSec(tx, x); return !(sec > 0 && sec >= need); });
+        return missT.length ? fail('Missing on screen: ' + missT.join(', ')) : ok('All required text is on screen');
+      case 'screen_text_lowercase':
+        if (!tx || !tx.lines) return null;
+        var caps = tx.lines.filter(function(l){ return l.seconds >= 1 && /\p{Lu}/u.test(l.text); });
+        return caps.length ? fail('Capital letters on screen: ' + caps[0].text) : ok('No capital letters on screen');
+      case 'screen_captions':
+        if (!tx || tx.changing_share == null) return null;
+        var pc = Math.round(tx.changing_share * 100), needPc = Math.round((item.min != null ? item.min : 0.5) * 100);
+        return pc >= needPc ? ok('Captions on ' + pc + '% of the clip') : fail('Captions on only ' + pc + '% of the clip, minimum is ' + needPc + '%');
+      case 'screen_text_clear':
+        if (!tx || !tx.frames) return null;
+        var top = (item.top || 0) / 1920, bottom = 1 - (item.bottom || 0) / 1920, left = (item.left || 0) / 1080, right = 1 - (item.right || 0) / 1080;
+        var bad = tx.frames.filter(function(f){ return (f.boxes || []).some(function(b){ return b[1] < top || b[3] > bottom || b[0] < left || b[2] > right; }); });
+        return bad.length ? fail('Text in a keep-clear zone for ' + r1(bad.length * tx.step) + ' s, first at ' + bad[0].t + ' s') : ok('Keep-clear zones are clear');
+      case 'screen_text_zone':
+        if (!tx || !tx.frames || !tx.frames.length) return null;
+        var inTop = tx.frames.filter(function(f){ return (f.boxes || []).some(function(b){ return b[3] <= 0.34; }); }).length;
+        var pz = Math.round(inTop / tx.frames.length * 100);
+        return pz >= 50 ? ok('Text in the top third on ' + pz + '% of the clip') : fail('Text in the top third on only ' + pz + '% of the clip');
+      case 'speech_language':
+        var sp = d.speech;
+        /* a second or two of singing is not enough to name the language */
+        if (!sp || !sp.lang || !(sp.speech_s >= 3) || !(sp.prob >= 0.6)) return null;
+        return sp.lang === String(item.value).toLowerCase() ? ok('Spoken language: ' + sp.lang) : fail('Spoken language is ' + sp.lang + ', needs ' + item.value);
+      case 'video_codec':
+        var cd = d.codec;
+        if (!cd || !cd.video) return null;
+        var got = cd.video + ' + ' + (cd.audio || '—'), wantC = (item.video || '') + ' + ' + (item.audio || '');
+        var good = (!item.video || cd.video === item.video) && (!item.audio || cd.audio === item.audio);
+        return good ? ok('Codecs: ' + got) : fail('Codecs are ' + got + ', needs ' + wantC);
+      case 'video_logo':
+        if (!d.logo || d.logo.ok == null) return null;
+        return d.logo.ok ? ok('Logo found, match ' + d.logo.static) : fail('Logo not found, match ' + d.logo.static);
+      case 'video_original_audio':
+        if (!d.audio || d.audio.ok == null) return null;
+        var pa = Math.round(d.audio.share_original * 100);
+        return d.audio.ok ? ok('Original audio on ' + pa + '% of the clip') : fail('Original audio on only ' + pa + '% of the clip');
+    }
+    return null;
+  }
+
+  /* frames: [{w, h, data}] with one brightness byte per pixel. Returns the share of the frame taken by solid black
+     bars (top+bottom, left+right). Real bars are on every frame, a dark scene is not, so a low percentile is used. */
+  function barShare(frames){
+    var tb = [], lr = [];
+    (frames || []).forEach(function(f){
+      var w = f.w, h = f.h, d = f.data, total = 0, i;
+      for (i = 0; i < d.length; i++) total += d[i];
+      if (total / d.length < 14) return;
+      function dark(get, n){
+        var sum = 0, sq = 0, k, v;
+        for (k = 0; k < n; k++){ v = get(k); sum += v; sq += v * v; }
+        var m = sum / n;
+        return m < 10 && Math.sqrt(Math.max(0, sq / n - m * m)) < 6;
+      }
+      function edge(count, isDark){
+        var a = 0, b = 0;
+        while (a < count && isDark(a)) a++;
+        while (b < count - a && isDark(count - 1 - b)) b++;
+        return (a + b) / count;
+      }
+      tb.push(edge(h, function(y){ return dark(function(x){ return d[y * w + x]; }, w); }));
+      lr.push(edge(w, function(x){ return dark(function(y){ return d[y * w + x]; }, h); }));
+    });
+    if (!tb.length) return null;
+    function low(a){ var s = a.slice().sort(function(p, q){ return p - q; }); return s[Math.floor((s.length - 1) * 0.2)]; }
+    return { tb: low(tb), lr: low(lr) };
+  }
+
+  function isCaption(item){ return CAPTION.indexOf(item.kind) >= 0; }
+  function isVideo(item){ return VIDEO.indexOf(item.kind) >= 0; }
+  function isDeep(item){ return DEEP.indexOf(item.kind) >= 0; }
+  function isPost(item){ return POST.indexOf(item.kind) >= 0; }
+  /* An item is checked automatically when it is a caption rule, a video rule with a video file, or a deep rule with a report. */
+  function isAuto(item, video){ return isCaption(item) || (isVideo(item) && !!video) || (isDeep(item) && !!(video && video.deep)); }
+  function run(item, caption, video){
+    if (isCaption(item)) return runCaption(item, caption);
+    if (isVideo(item) && video) return runVideo(item, video);
+    return null;
+  }
+  /* The one call a page needs. Returns {ok, note} when the rule was checked, or null when a person has to confirm it. */
+  function evaluate(item, caption, video){
+    var c = norm(caption), vs = item.values || [];
+    if (SOFT.indexOf(item.kind) >= 0){
+      var hit = vs.filter(function(x){ return has(caption, c, x); });
+      if (hit.length) return ok('Found in the caption: ' + hit[0]);
+      /* "in the caption or on screen": with a text report the screen side can be checked too */
+      var tx = item.other === 'screen' && video && video.deep && video.deep.text;
+      if (!tx || !tx.frames) return null;
+      var seen = vs.filter(function(x){ return heldSec(tx, x) > 0; });
+      return seen.length ? ok('Found on screen: ' + seen[0]) : fail('Not in the caption and not on screen: ' + vs.join(' or '));
+    }
+    if (isCaption(item)) return c ? runCaption(item, caption) : fail('Caption is empty');
+    if (isVideo(item) && video) return runVideo(item, video);
+    if (isDeep(item) && video && video.deep) return runDeep(item, video.deep);
+    return null;
+  }
+  /* Platform-specific rules apply only when that platform is selected. */
+  function applies(item, platform){ return !item.platform || !platform || String(item.platform).toLowerCase() === String(platform).toLowerCase(); }
+  function minViews(rate, minPayout){ return (rate > 0 && minPayout > 0) ? Math.ceil(minPayout / rate * 1000) : null; }
+
+  /* Keep only well-formed items from an untrusted checklist (e.g. parsed by a model). */
+  function clean(raw){
+    var out = { name: String(raw && raw.name || 'Untitled').slice(0,120), platforms: [], payout: [], items: [] };
+    (raw && Array.isArray(raw.platforms) ? raw.platforms : []).slice(0,6).forEach(function(p){ out.platforms.push(String(p).slice(0,40)); });
+    (raw && Array.isArray(raw.payout) ? raw.payout : []).slice(0,6).forEach(function(p){
+      var r = Number(p && p.rate_per_1k), m = Number(p && p.min_payout);
+      if (p && p.platform && r > 0) out.payout.push({ platform: String(p.platform).slice(0,40), rate_per_1k: r, min_payout: m > 0 ? m : null });
+    });
+    var needsValue = { contains:1, mention:1, not_contains:1, starts_with:1, ends_with:1, speech_language:1 };
+    var needsValues = { contains_all:1, one_of_line:1, first_hashtag:1, any_of:1, caption_or_other:1, screen_text:1, screen_text_all:1 };
+    var needsN = { max_extra_hashtags:1, video_min_side:1 };
+    (raw && Array.isArray(raw.items) ? raw.items : []).slice(0,40).forEach(function(it){
+      if (!it || !it.text) return;
+      var known = CAPTION.indexOf(it.kind) >= 0 || VIDEO.indexOf(it.kind) >= 0 || SOFT.indexOf(it.kind) >= 0 || DEEP.indexOf(it.kind) >= 0 || POST.indexOf(it.kind) >= 0;
+      var item = { group: ['caption','video','post','submit'].indexOf(it.group) >= 0 ? it.group : 'post', text: String(it.text).slice(0,240), kind: known ? it.kind : 'manual' };
+      if (it.value != null) item.value = String(it.value).slice(0,200);
+      if (Array.isArray(it.values)) item.values = it.values.slice(0,10).map(function(x){ return String(x).slice(0,200); });
+      ['n','min','max','seconds','top','bottom','left','right','minutes'].forEach(function(k){ if (it[k] != null && isFinite(Number(it[k]))) item[k] = Number(it[k]); });
+      if (it.platform) item.platform = String(it.platform).slice(0,40);
+      if (it.other === 'screen') item.other = 'screen';
+      ['video','audio'].forEach(function(k){ if (it[k] && /^[a-z0-9]{2,12}$/.test(String(it[k]))) item[k] = String(it[k]); });
+      var k = item.kind;
+      if ((needsValue[k] && !item.value) || (needsValues[k] && !(item.values && item.values.length)) || (needsN[k] && item.n == null) ||
+          (k === 'video_duration' && item.min == null && item.max == null) || (k === 'submit_window' && !(item.minutes > 0))) item.kind = 'manual';
+      if (isCaption(item)) item.group = 'caption';
+      if (isVideo(item) || isDeep(item)) item.group = 'video';
+      if (isPost(item)) item.group = 'submit';
+      out.items.push(item);
+    });
+    return out;
+  }
+  return { evaluate: evaluate, run: run, isAuto: isAuto, isCaption: isCaption, isVideo: isVideo, isDeep: isDeep, isPost: isPost, postInfo: postInfo, submitWindow: submitWindow, near: near, applies: applies, barShare: barShare, minViews: minViews, clean: clean, hashtags: hashtags };
+})();
+</script>
+<script>
+/* "Your own brief": turns a few plain fields (what the brief asks for) into a checklist the engine can run,
+   and packs those fields into a link so a campaign team can hand the same checklist to every clipper.
+   Pure: no DOM. Needs Logic (checker/logic.js) for clean(). Tested with node: site/test_brief.js.
+
+   A brief is a small object with short keys, because it travels in the link:
+     n name · t account to tag · p required phrases · d ad disclosure hashtags · w where the disclosure sits
+     ('any' | 'line' | 'first') · h max other hashtags · x banned words · a 9:16 · lo/hi length in seconds ·
+     k no black bars · s minutes to submit the link · m things a person confirms */
+var Brief = (function(){
+  var MAX_LINK = 6000;
+  function str(v, max){ return String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max || 120); }
+  function list(v, max){
+    var seen = {}, out = [];
+    (Array.isArray(v) ? v : String(v == null ? '' : v).split(/\r?\n/)).forEach(function(x){
+      var s = str(x, max), k = s.toLowerCase();
+      if (s && !seen[k] && out.length < 12){ seen[k] = 1; out.push(s); }
+    });
+    return out;
+  }
+  function num(v, lo, hi){ var n = Number(v); return v === '' || v == null || !isFinite(n) || n < lo || n > hi ? null : Math.round(n); }
+
+  /* Whatever comes in (a form, a link someone sent), only well-formed fields come out. */
+  function sanitize(raw){
+    raw = raw && typeof raw === 'object' ? raw : {};
+    var b = {};
+    var n = str(raw.n, 80); if (n) b.n = n;
+    var t = str(raw.t, 40).replace(/^@+/, ''); if (/^[\w.]{1,30}$/.test(t)) b.t = t;
+    var p = list(raw.p, 120); if (p.length) b.p = p;
+    var d = list(Array.isArray(raw.d) ? raw.d : String(raw.d == null ? '' : raw.d).split(/[\s,;]+/), 40)
+      .map(function(x){ return '#' + x.replace(/^#+/, ''); }).filter(function(x){ return /^#[\p{L}\p{N}_]+$/u.test(x); });
+    if (d.length){ b.d = d; b.w = raw.w === 'line' || raw.w === 'first' ? raw.w : 'any'; }
+    var h = num(raw.h, 0, 30); if (h != null) b.h = h;
+    var x = list(raw.x, 60); if (x.length) b.x = x;
+    if (raw.a) b.a = 1;
+    var lo = num(raw.lo, 1, 3600), hi = num(raw.hi, 1, 3600);
+    if (lo != null) b.lo = lo;
+    if (hi != null && (lo == null || hi >= lo)) b.hi = hi;
+    if (raw.k) b.k = 1;
+    var s = num(raw.s, 1, 1440); if (s != null) b.s = s;
+    var m = list(raw.m, 160); if (m.length) b.m = m;
+    return b;
+  }
+
+  function toCampaign(raw){
+    var b = sanitize(raw), items = [];
+    function add(group, text, kind, extra){ var it = { group: group, text: text, kind: kind }; for (var k in (extra || {})) it[k] = extra[k]; items.push(it); }
+    if (b.t) add('caption', 'Tags @' + b.t, 'mention', { value: b.t });
+    (b.p || []).forEach(function(v){ add('caption', 'Includes “' + v + '”', 'contains', { value: v }); });
+    if (b.d){
+      var names = b.d.join(' or ');
+      if (b.w === 'any') add('caption', 'Ad disclosure: ' + names, 'any_of', { values: b.d });
+      else add('caption', 'Ad disclosure on its own line: ' + names, 'one_of_line', { values: b.d });
+      if (b.w === 'first') add('caption', 'Ad disclosure is the first hashtag', 'first_hashtag', { values: b.d });
+    }
+    if (b.h != null) add('caption', 'No more than ' + b.h + (b.d ? ' other' : '') + (b.h === 1 ? ' hashtag' : ' hashtags'), 'max_extra_hashtags', { n: b.h, values: b.d || [] });
+    (b.x || []).forEach(function(v){ add('caption', 'Does not use “' + v + '”', 'not_contains', { value: v }); });
+    if (b.a) add('video', 'Vertical 9:16', 'video_aspect', { value: '9:16' });
+    if (b.lo != null || b.hi != null)
+      add('video', b.lo != null && b.hi != null ? 'Length ' + b.lo + ' to ' + b.hi + ' seconds' : b.lo != null ? 'At least ' + b.lo + ' seconds long' : 'No longer than ' + b.hi + ' seconds',
+          'video_duration', { min: b.lo != null ? b.lo : null, max: b.hi != null ? b.hi : null });
+    if (b.k) add('video', 'No black bars', 'video_no_bars');
+    (b.m || []).forEach(function(v){ add('post', v, 'manual'); });
+    if (b.s != null) add('submit', 'Link submitted within ' + b.s + (b.s === 1 ? ' minute' : ' minutes') + ' of posting', 'submit_window', { minutes: b.s });
+    var c = Logic.clean({ name: b.n || 'Your own brief', items: items });
+    c.id = '__own';
+    return c;
+  }
+
+  /* The link carries the fields, not the checklist, so whoever opens it can still edit them. */
+  function b64(bytes){ var s = ''; for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64(t){ var s = atob(t.replace(/-/g, '+').replace(/_/g, '/')), a = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; }
+  function pack(raw){ return b64(new TextEncoder().encode(JSON.stringify(sanitize(raw)))); }
+  function unpack(text){
+    try {
+      var t = String(text || '').replace(/^#?b=/, '');
+      if (!t || t.length > MAX_LINK || !/^[A-Za-z0-9_-]+$/.test(t)) return null;
+      var b = sanitize(JSON.parse(new TextDecoder().decode(unb64(t))));
+      return Object.keys(b).length ? b : null;
+    } catch (e) { return null; }
+  }
+  function isEmpty(raw){ var b = sanitize(raw), k = Object.keys(b); return !k.length || (k.length === 1 && k[0] === 'n'); }
+  return { sanitize: sanitize, toCampaign: toCampaign, pack: pack, unpack: unpack, isEmpty: isEmpty };
+})();
+</script>
+<script>
+var CAMPAIGNS = [{"id": "aries-8ball-free-stock", "name": "Shake the magic 8-ball, film your free stock reveal", "organizer": "Aries", "url": "https://contentrewards.com/c/campaigns/9f48000c-4fb1-433f-b9e7-3efb18cd2ca7", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 2.5, "min_payout": 10.0}, {"platform": "Instagram", "rate_per_1k": 2.5, "min_payout": 10.0}, {"platform": "YouTube", "rate_per_1k": 2.5, "min_payout": 10.0}], "items": [{"group": "caption", "text": "Tag Aries in your caption. On TikTok, Instagram and YouTube the handle is @tradearies.", "kind": "mention", "value": "tradearies"}, {"group": "caption", "text": "Add \"Terms apply\" to your caption.", "kind": "contains", "value": "Terms apply"}, {"group": "caption", "text": "Hashtags: #aries8ball", "kind": "contains", "value": "#aries8ball"}, {"group": "caption", "text": "Disclose the partnership with #ad, or use the platform's paid partnership label", "kind": "caption_or_other", "values": ["#ad"]}, {"group": "video", "text": "The 8-ball, the shake and the reveal should all be on camera.", "kind": "manual"}, {"group": "video", "text": "Show the stock you got and its value.", "kind": "manual"}, {"group": "video", "text": "Film real reveals only. Don't fake, stage, edit or misstate the stock", "kind": "manual"}, {"group": "video", "text": "hint at big wins, guaranteed returns or \"free money.\"", "kind": "manual"}, {"group": "video", "text": "Don't give investment advice or tell people what to buy, hold or sell.", "kind": "manual"}, {"group": "video", "text": "Don't show account numbers, balances or personal information on screen.", "kind": "manual"}, {"group": "video", "text": "Don't change, cover or remove the Aries logo or name.", "kind": "manual"}, {"group": "post", "text": "Share it as a short vertical video on TikTok, Instagram Reels or YouTube Shorts.", "kind": "manual"}, {"group": "post", "text": "The offer is for US residents only", "kind": "manual"}, {"group": "post", "text": "No fake accounts, self-referrals or paying people to sign up through your link.", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "backrooms-nemoris-it-eats-light", "name": "Backrooms Nemoris: It Eats Light", "organizer": "Nemoris", "url": "https://contentrewards.com/c/campaigns/ed8fc7e4-4a78-4577-8410-e4a77ce0fea6", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 10.0, "min_payout": 2.0}, {"platform": "Instagram", "rate_per_1k": 10.0, "min_payout": 2.0}, {"platform": "YouTube", "rate_per_1k": 10.0, "min_payout": 2.0}], "items": [{"group": "caption", "text": "Identify the project as Backrooms Nemoris in the caption", "kind": "contains", "value": "Backrooms Nemoris"}, {"group": "caption", "text": "clearly disclose that the post is sponsored", "kind": "manual"}, {"group": "video", "text": "Use only the footage and assets provided in this campaign.", "kind": "manual"}, {"group": "video", "text": "Keep the 1979 Soviet-era found-footage atmosphere", "kind": "manual"}, {"group": "video", "text": "Do not reveal major plot turns, the ending, or the unknown entity.", "kind": "manual"}, {"group": "video", "text": "End with a clear call to action", "kind": "manual"}, {"group": "post", "text": "Link directly to the full episode in your TikTok or Instagram bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "chris-heyn-show-clipping", "name": "The Chris Heyn Show Clipping", "organizer": "Chris Heyn Jr. Clipping", "url": "https://contentrewards.com/c/campaigns/19859ab5-057c-4cff-847c-93155c896827", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 1.5, "min_payout": 3.0}, {"platform": "Instagram", "rate_per_1k": 1.5, "min_payout": 3.0}, {"platform": "YouTube", "rate_per_1k": 1.5, "min_payout": 3.0}], "items": [{"group": "caption", "text": "#chrisheynjr on EVERY platform", "kind": "contains", "value": "#chrisheynjr"}, {"group": "caption", "text": "TikTok: tag @thechshow", "kind": "mention", "value": "thechshow", "platform": "TikTok"}, {"group": "caption", "text": "Instagram Reels: tag @chrisheynshow", "kind": "mention", "value": "chrisheynshow", "platform": "Instagram"}, {"group": "caption", "text": "YouTube Shorts: tag @ChrisHeynShow", "kind": "mention", "value": "ChrisHeynShow", "platform": "YouTube"}, {"group": "video", "text": "every shot of Chris must come from the approved Chris Heyn Show episodes", "kind": "manual"}, {"group": "video", "text": "Clean sources only: no other creator's watermark", "kind": "manual"}, {"group": "video", "text": "HOOK in the first second.", "kind": "manual"}, {"group": "video", "text": "Vertical 9:16 only", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "Never repost a raw segment.", "kind": "manual"}, {"group": "video", "text": "NO loud meme edits: Impact-font captions, vine booms, zoom punches", "kind": "manual"}, {"group": "video", "text": "Never cut or caption his words so they mean something he didn't say.", "kind": "manual"}, {"group": "video", "text": "Never imply a brand sponsors Chris", "kind": "manual"}, {"group": "video", "text": "YouTube Shorts under 60 seconds", "kind": "video_duration", "platform": "YouTube", "max": 60}, {"group": "video", "text": "YouTube: add the song with YouTube's in-app sound picker", "kind": "manual", "platform": "YouTube"}, {"group": "post", "text": "Post the SAME video on TikTok, Instagram Reels AND YouTube Shorts.", "kind": "manual"}, {"group": "post", "text": "post from a personal or creator account", "kind": "manual"}, {"group": "post", "text": "No botted views or likes.", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "cod-warzone-s1", "name": "Call of Duty: Warzone Season 1", "organizer": "Clipping Culture", "platforms": ["TikTok", "Instagram Reels"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 2, "min_payout": 5}, {"platform": "Instagram", "rate_per_1k": 1.5, "min_payout": 4}], "items": [{"group": "caption", "text": "Tags @callofduty", "kind": "mention", "value": "callofduty"}, {"group": "caption", "text": "Includes the phrase “Season 1 out now”", "kind": "contains", "value": "Season 1 out now"}, {"group": "caption", "text": "Credits the song: Agust D (Suga from BTS) - “Haegeum”", "kind": "contains_all", "values": ["Agust D (Suga from BTS)", "Haegeum"]}, {"group": "caption", "text": "Ad disclosure sits on its own line", "kind": "one_of_line", "values": ["#Ad", "#Advertisement", "#Sponsored"]}, {"group": "caption", "text": "Ad disclosure is the first hashtag", "kind": "first_hashtag", "values": ["#Ad", "#Advertisement", "#Sponsored"]}, {"group": "caption", "text": "No more than 3 other hashtags", "kind": "max_extra_hashtags", "n": 3, "values": ["#Ad", "#Advertisement", "#Sponsored"]}, {"group": "caption", "text": "Does not call the trailer “gameplay”", "kind": "not_contains", "value": "gameplay"}, {"group": "video", "text": "Only footage from the official content link", "kind": "manual"}, {"group": "video", "text": "Official Warzone logo is clearly visible", "kind": "video_logo"}, {"group": "video", "text": "Original audio only, no added music", "kind": "video_original_audio"}, {"group": "video", "text": "No AI voice or AI narration", "kind": "manual"}, {"group": "video", "text": "English content, high quality", "kind": "manual"}, {"group": "video", "text": "On-screen text matches what the clip shows", "kind": "manual"}, {"group": "post", "text": "@callofduty is tagged from the suggestion list, not just typed", "kind": "manual"}, {"group": "post", "text": "Likes are visible on the account", "kind": "manual"}, {"group": "post", "text": "This video is not posted on another account on the same platform", "kind": "manual"}, {"group": "post", "text": "The post will stay live for at least 30 days", "kind": "manual"}, {"group": "submit", "text": "Link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "flight-clips-pilot-ryan", "name": "Flight Clips - $2 per 1K views", "organizer": "Pilot Ryan", "url": "https://contentrewards.com/c/campaigns/0d0e33cf-d4b6-44fb-8006-a30478933d60", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 2.0, "min_payout": 2.0}, {"platform": "Instagram", "rate_per_1k": 2.0, "min_payout": 2.0}, {"platform": "YouTube", "rate_per_1k": 2.0, "min_payout": 2.0}], "items": [{"group": "caption", "text": "TikTok: tag @ryantseko in the caption", "kind": "mention", "value": "ryantseko", "platform": "TikTok"}, {"group": "caption", "text": "Instagram: tag @ryantseko in the caption", "kind": "mention", "value": "ryantseko", "platform": "Instagram"}, {"group": "caption", "text": "YouTube Shorts: tag @ryantseko10X in the caption", "kind": "mention", "value": "ryantseko10X", "platform": "YouTube"}, {"group": "caption", "text": "Add \"Follow @ryantseko for more\" on screen or in the caption", "kind": "caption_or_other", "values": ["Follow @ryantseko for more"], "other": "screen"}, {"group": "caption", "text": "No false claims in captions (no fake crashes or emergencies)", "kind": "manual"}, {"group": "video", "text": "Use footage from the Dropbox link only", "kind": "manual"}, {"group": "video", "text": "Open on the most dramatic moment in the first 2 seconds", "kind": "manual"}, {"group": "video", "text": "Vertical 9:16", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "10 to 45 seconds", "kind": "video_duration", "min": 10, "max": 45}, {"group": "video", "text": "Must be edited - no full videos reposted as is", "kind": "manual"}, {"group": "video", "text": "No other creator's watermark or logo", "kind": "manual"}, {"group": "post", "text": "Keep the post public for at least 30 days", "kind": "manual"}, {"group": "post", "text": "Post for a US audience: English captions and US-friendly hooks.", "kind": "manual"}, {"group": "post", "text": "Posts with no likes, comments, or shares will be rejected", "kind": "manual"}, {"group": "post", "text": "Bought views, likes, or comments = rejection and removal from the campaign", "kind": "manual"}, {"group": "post", "text": "One account per person", "kind": "manual"}, {"group": "submit", "text": "Include a screenshot of the post's audience demographics (country breakdown) with every submission", "kind": "manual"}, {"group": "submit", "text": "Posts earning $10+ must send a screen recording of that video's analytics (Geography 50%+ US", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "mack-camferdam-twitch-clips", "name": "Mack Camferdam - Twitch Clips", "organizer": "Mack Camferdam", "url": "https://contentrewards.com/c/campaigns/79d6abae-b305-42e9-9ebe-82e47583adb5", "platforms": ["TikTok"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 1.0, "min_payout": 1.0}], "items": [{"group": "caption", "text": "Put \"Mack_Camferdam on Twitch\" in the TikTok description", "kind": "contains", "value": "Mack_Camferdam on Twitch"}, {"group": "caption", "text": "and tag @mack.camferdam.", "kind": "mention", "value": "mack.camferdam"}, {"group": "video", "text": "Keep my facecam in frame the whole time.", "kind": "manual"}, {"group": "video", "text": "Burn the caption into the top third", "kind": "screen_text_zone"}, {"group": "video", "text": "White text, black outline", "kind": "manual"}, {"group": "video", "text": "9:16 vertical", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "No letterboxing, no borders", "kind": "video_no_bars"}, {"group": "video", "text": "Full screen, bright and readable", "kind": "manual"}, {"group": "video", "text": "No watermarks from other apps and no other streamers' overlays or names in frame.", "kind": "manual"}, {"group": "video", "text": "Do not open on a menu, a mod list, or a loading screen.", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "maximum-life-clips", "name": "Maximum Life Clips: Sermons & Podcasts", "organizer": "Maximum Life", "url": "https://contentrewards.com/c/campaigns/370da744-85e8-48b6-8005-a4157f9ab9fe", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 1.5, "min_payout": 3.0}, {"platform": "Instagram", "rate_per_1k": 1.5, "min_payout": 3.0}, {"platform": "YouTube", "rate_per_1k": 1.5, "min_payout": 3.0}], "items": [{"group": "caption", "text": "Caption must include #MaximumLife and Get the Maximum Life+ app", "kind": "contains_all", "values": ["#MaximumLife", "Get the Maximum Life+ app"]}, {"group": "caption", "text": "Name Dr. Zach Terry, Code Red Talk or Ladylike on screen or in caption", "kind": "caption_or_other", "values": ["Dr. Zach Terry", "Code Red Talk", "Ladylike"], "other": "screen"}, {"group": "video", "text": "Hook in the first 2 seconds with the strongest line", "kind": "manual"}, {"group": "video", "text": "Clips 15 to 90 seconds", "kind": "video_duration", "min": 15, "max": 90}, {"group": "video", "text": "Vertical 9:16", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "Burned-in captions on every clip", "kind": "screen_captions"}, {"group": "video", "text": "Keep every quote in context. No cuts that change the meaning", "kind": "manual"}, {"group": "video", "text": "Do not alter Scripture quotes or add words anyone did not say", "kind": "manual"}, {"group": "video", "text": "No mocking music, memes or reaction overlays", "kind": "manual"}, {"group": "video", "text": "No children's faces from church services", "kind": "manual"}, {"group": "post", "text": "Add link in bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "millionaire-hot-takes", "name": "Millionaire Hot Takes | Viral Clipping", "organizer": "Crawford Legacy Group", "url": "https://contentrewards.com/c/campaigns/07d35069-c63d-4382-bf14-0a70921f7693", "platforms": ["Instagram", "TikTok"], "updated": "2026-11-10", "payout": [{"platform": "Instagram", "rate_per_1k": 2.75, "min_payout": 25.0}, {"platform": "TikTok", "rate_per_1k": 2.75, "min_payout": 25.0}], "items": [{"group": "caption", "text": "TAG @cashonlyjon in BOTH your Reel and caption.", "kind": "mention", "value": "cashonlyjon"}, {"group": "caption", "text": "INCLUDE \"Follow @cashonlyjon for more\" in your caption.", "kind": "contains", "value": "Follow @cashonlyjon for more"}, {"group": "post", "text": "TAG @cashonlyjon in BOTH your Reel and caption.", "kind": "manual"}, {"group": "post", "text": "KEEP LIKES VISIBLE on your posts.", "kind": "manual"}, {"group": "video", "text": "CREATE ORIGINAL, HIGH-QUALITY EDITS. No copied, recycled, or low-effort edits.", "kind": "manual"}, {"group": "video", "text": "Use cinematic or trending background music with Jon's voice clearly audible.", "kind": "manual"}, {"group": "video", "text": "Use default CapCut captions, bouncing yellow text, or excessive emojis.", "kind": "manual"}, {"group": "video", "text": "Use random stock footage, gameplay, or distracting effects.", "kind": "manual"}, {"group": "video", "text": "Minimum clip length 10 seconds", "kind": "video_duration", "min": 10}, {"group": "post", "text": "Repost other creators' edits or use fake engagement.", "kind": "manual"}, {"group": "post", "text": "Add link in bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "taplot-interactive-drama", "name": "Taplot - Interactive Drama", "organizer": "Taplot", "url": "https://contentrewards.com/c/campaigns/04ea0556-2842-426b-8ff6-ee85233ac326", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 1.5, "min_payout": 5.0}, {"platform": "Instagram", "rate_per_1k": 1.5, "min_payout": 5.0}, {"platform": "YouTube", "rate_per_1k": 1.5, "min_payout": 5.0}], "items": [{"group": "caption", "text": "include #taplot and #taplotpartner in every video (required for disclosure)", "kind": "contains_all", "values": ["#taplot", "#taplotpartner"]}, {"group": "caption", "text": "The game name in your on-screen text, caption and pinned reply must match the game shown in the video.", "kind": "manual"}, {"group": "caption", "text": "Caption all lowercase", "kind": "lowercase"}, {"group": "video", "text": "On-screen text all lowercase", "kind": "screen_text_lowercase"}, {"group": "post", "text": "Comments all lowercase too", "kind": "manual"}, {"group": "video", "text": "Use the exact link: taplot.ai/cc", "kind": "manual"}, {"group": "video", "text": "On-screen CTA with the link taplot.ai/cc for at least 5 seconds", "kind": "screen_text", "values": ["taplot.ai/cc"], "seconds": 5}, {"group": "video", "text": "The CTA also names the game", "kind": "manual"}, {"group": "video", "text": "Hook: a dramatic or romantic moment", "kind": "manual"}, {"group": "video", "text": "At least 20 seconds", "kind": "video_duration", "min": 20}, {"group": "post", "text": "reply to their comment with the link and the game name, then pin that reply", "kind": "manual"}, {"group": "post", "text": "minimum audience of 40%+ US-based viewers to qualify (Verified via screen recording)", "kind": "manual"}, {"group": "post", "text": "Add link in bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "thats-extra-roblox-shorts-remix", "name": "That's Extra! | Roblox Shorts Remix", "organizer": "Storyboat Global", "url": "https://contentrewards.com/c/campaigns/0a58a063-f14d-4de9-98ba-d5215209a666", "platforms": ["YouTube"], "updated": "2026-11-10", "payout": [{"platform": "YouTube", "rate_per_1k": 1.5, "min_payout": 1.5}], "items": [{"group": "caption", "text": "Include \"Full song on YouTube: Storyboat Global — That's Extra!\" in the caption.", "kind": "contains", "value": "Full song on YouTube: Storyboat Global — That's Extra!"}, {"group": "caption", "text": "Include \"Unofficial fictional Roblox parody\" in the caption.", "kind": "contains", "value": "Unofficial fictional Roblox parody"}, {"group": "caption", "text": "caption using \"Ad\" or \"Paid promotion for Storyboat Global\"", "kind": "manual"}, {"group": "caption", "text": "Do not hide the disclosure among hashtags.", "kind": "manual"}, {"group": "post", "text": "Publish on YouTube Shorts only.", "kind": "manual"}, {"group": "video", "text": "9:16 Short", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "15–30 seconds long", "kind": "video_duration", "min": 15, "max": 30}, {"group": "video", "text": "At least 720p", "kind": "video_min_side", "n": 720}, {"group": "video", "text": "Roblox-themed", "kind": "manual"}, {"group": "video", "text": "Keep the song clearly audible as the main audio.", "kind": "manual"}, {"group": "video", "text": "Readable on-screen credit: \"That's Extra! — Storyboat Global\"", "kind": "screen_text", "values": ["That's Extra! — Storyboat Global"], "seconds": 1}, {"group": "video", "text": "Use accurate English captions or readable on-screen text", "kind": "manual"}, {"group": "video", "text": "Do not imply Roblox endorsement", "kind": "manual"}, {"group": "post", "text": "Use YouTube's native Remix from our exact source", "kind": "manual"}, {"group": "post", "text": "Keep each submitted post public and materially unchanged for at least 30 days", "kind": "manual"}, {"group": "post", "text": "All claimed views and engagement must come from genuine, voluntary viewers.", "kind": "manual"}, {"group": "post", "text": "No paid boosts, ads, paid traffic suppliers", "kind": "manual"}, {"group": "submit", "text": "Obtain campaign draft approval before posting.", "kind": "manual"}, {"group": "submit", "text": "submit a screenshot showing that attribution with the Short URL", "kind": "manual"}, {"group": "submit", "text": "unedited native-analytics recording within 48 hours of reaching that threshold", "kind": "manual"}, {"group": "submit", "text": "Submit each post URL only once.", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "zutobi-driving-lessons-clipping", "name": "Zutobi Driving Lessons Clipping (US creators only)", "organizer": "Zutobi", "url": "https://contentrewards.com/c/campaigns/471a8ddb-a18e-470e-94fa-5abc124de68f", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 3.0, "min_payout": 12.0}, {"platform": "Instagram", "rate_per_1k": 3.0, "min_payout": 12.0}, {"platform": "YouTube", "rate_per_1k": 3.0, "min_payout": 12.0}], "items": [{"group": "post", "text": "US-based creators only, or at least 60% US audience.", "kind": "manual"}, {"group": "submit", "text": "Analytics screenshot required on request.", "kind": "manual"}, {"group": "post", "text": "Account must be public, active for 3+ months, with at least 10 public videos.", "kind": "manual"}, {"group": "post", "text": "No new accounts created for this campaign.", "kind": "manual"}, {"group": "video", "text": "One clip = one idea: one question, one mistake, one situation or one tip. 20-45 seconds recommended.", "kind": "manual"}, {"group": "video", "text": "Hook in the first 0-2 seconds", "kind": "manual"}, {"group": "video", "text": "End every clip with the Zutobi packshot (last 2-3 seconds) with a short call to action.", "kind": "manual"}, {"group": "video", "text": "The Zutobi watermark stays visible for the whole clip", "kind": "video_logo"}, {"group": "video", "text": "No black bars", "kind": "video_no_bars"}, {"group": "video", "text": "No stretching", "kind": "manual"}, {"group": "video", "text": "Keep the top ~250 px, bottom ~350 px and right ~150 px of the 1080x1920 frame clear of text", "kind": "screen_text_clear", "top": 250, "bottom": 350, "right": 150}, {"group": "video", "text": "Burned-in captions for everything Jacqueline says", "kind": "screen_captions"}, {"group": "video", "text": "3-6 words per caption line", "kind": "manual"}, {"group": "video", "text": "Jacqueline's voice clearly louder than music (music at about 10-20% of her volume). Licensed music only.", "kind": "manual"}, {"group": "video", "text": "Don't speed up her voice more than 1.1x.", "kind": "manual"}, {"group": "video", "text": "never cut Jacqueline's words so the meaning changes", "kind": "manual"}, {"group": "video", "text": "Export 9:16 vertical", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "1080x1920", "kind": "video_min_side", "n": 1080}, {"group": "video", "text": "MP4 (H.264 + AAC)", "kind": "video_codec", "video": "h264", "audio": "aac"}, {"group": "post", "text": "Add link in bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}], "note": "Part of this brief is only visible after joining the campaign."}];
+(function(){
+  var el = function(id){ return document.getElementById(id); };
+  var S = { cid: null, platform: null, video: null, post: '', ticks: {}, own: {} };
+  var OWN = '__own', ownCampaign = null;
+  var GROUPS = { video: 'Video', post: 'Account and post', submit: 'Submitting the link', caption: 'Caption' };
+  /* A caption with the usual mistakes, so a first-time visitor sees what a failed check looks like. */
+  var SAMPLE = 'this new map is insane 🔥\n#fyp #viral #gaming #clips #foryou';
+  function money(x){ return '$' + Number(x).toFixed(2); }
+  function campaign(){
+    if (S.cid === OWN){
+      if (!ownCampaign){ ownCampaign = Brief.toCampaign(S.own); ownCampaign.note = 'Your own checklist. It lives in this browser and in the link you copy.'; }
+      return ownCampaign;
+    }
+    return CAMPAIGNS.filter(function(c){ return c.id === S.cid; })[0];
+  }
+  function plural(n, one, many){ return n + ' ' + (n === 1 ? one : many); }
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  /* 19:46 today, "Nov 11, 19:46" on any other day */
+  function clock(ms){
+    var d = new Date(ms), t = pad(d.getHours()) + ':' + pad(d.getMinutes());
+    return d.toDateString() === new Date().toDateString() ? t : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + t;
+  }
+  function node(tag, cls, text){ var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+
+  function renderCampaign(){
+    var c = campaign(), f = el('facts'); f.textContent = '';
+    (c.payout || []).forEach(function(p){
+      var d = node('div'), mv = Logic.minViews(p.rate_per_1k, p.min_payout);
+      d.appendChild(node('b', null, p.platform));
+      d.appendChild(document.createTextNode(' pays ' + money(p.rate_per_1k) + ' per 1,000 views' + (mv ? ', starting from ' + mv.toLocaleString('en-US') + ' views' : '')));
+      f.appendChild(d);
+    });
+    el('meta').textContent = (c.organizer ? 'Run by ' + c.organizer + '. ' : '') + (c.updated ? 'Rules read on ' + c.updated + '. ' : '') + (c.note || '');
+    var box = el('platforms'), list = c.platforms || [];
+    box.textContent = '';
+    if (list.indexOf(S.platform) < 0) S.platform = list[0] || null;
+    list.forEach(function(p){
+      var b = node('button', null, p); b.type = 'button'; b.setAttribute('aria-pressed', String(p === S.platform));
+      b.addEventListener('click', function(){ S.platform = p; renderCampaign(); });
+      box.appendChild(b);
+    });
+    box.hidden = list.length < 2;
+    el('builder').hidden = S.cid !== OWN; el('own-open').hidden = S.cid === OWN;
+    renderResult();
+  }
+
+  function ruleRow(it, cls, status, note){
+    var li = node('li', 'check ' + cls), r = node('div', 'rule');
+    r.appendChild(node('span', 't', it.text)); r.appendChild(node('span', 'dots')); r.appendChild(node('span', 'st', status));
+    li.appendChild(r);
+    if (note) li.appendChild(node('div', 'why', note));
+    return li;
+  }
+
+  function renderResult(){
+    var c = campaign(), cap = el('caption').value, all = c.items || [];
+    var started = !!cap.trim() || !!S.video || !!S.post;
+    var items = all.filter(function(i){ return Logic.applies(i, S.platform); });
+    var fails = el('fails'), oks = el('oks'), waits = el('waits'), mu = el('manual');
+    [fails, oks, waits, mu].forEach(function(n){ n.textContent = ''; });
+    var nFail = 0, nOk = 0, nWait = 0, manual = [];
+    items.forEach(function(it){
+      /* before anything is pasted, caption rules are shown as waiting instead of failing on an empty caption */
+      if (!cap.trim() && Logic.isCaption(it)){ nWait++; waits.appendChild(ruleRow(it, 'wait', 'Waiting')); return; }
+      var r = Logic.evaluate(it, cap, S.video);
+      if (!r){ manual.push(it); return; }
+      if (r.ok){ nOk++; oks.appendChild(ruleRow(it, 'ok', 'Pass', r.note)); }
+      else { nFail++; fails.appendChild(ruleRow(it, 'fail', 'Fix', r.note)); }
+    });
+    el('fail-box').hidden = !nFail; el('ok-box').hidden = !nOk; el('wait-box').hidden = !nWait;
+
+    var ticks = S.ticks[S.cid] || (S.ticks[S.cid] = {}), left = 0, due = null;
+    ['video','post','submit','caption'].forEach(function(g){
+      var part = manual.filter(function(i){ return i.group === g; });
+      if (!part.length) return;
+      mu.appendChild(node('p', 'sub', GROUPS[g]));
+      var ul = node('ul', 'checks');
+      part.forEach(function(it){
+        var idx = all.indexOf(it), id = 'm-' + idx;
+        if (!ticks[idx]) left++;
+        var li = node('li', 'check tick');
+        var cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = id; cb.checked = !!ticks[idx];
+        /* the list is redrawn on every change, so put the keyboard focus back on the box that was just ticked */
+        cb.addEventListener('change', function(){ ticks[idx] = cb.checked; renderResult(); var again = el(id); if (again) again.focus({ preventScroll: true }); });
+        var lb = node('label', null, it.text); lb.htmlFor = id;
+        li.appendChild(cb); li.appendChild(lb);
+        /* a "submit within N minutes" rule gets a countdown once the link to the live post is pasted */
+        var w = Logic.isPost(it) && S.post ? Logic.submitWindow(it, S.post, Date.now()) : null;
+        if (w){
+          if (!w.open) li.className += ' late';
+          li.appendChild(node('div', 'why', w.open ? 'Posted at ' + clock(w.posted) + '. Submit by ' + clock(w.end) + ', ' + plural(w.left, 'minute', 'minutes') + ' left.'
+                                                   : 'Posted at ' + clock(w.posted) + '. The window closed at ' + clock(w.end) + '.'));
+          if (!ticks[idx] && !due) due = w;
+        }
+        ul.appendChild(li);
+      });
+      mu.appendChild(ul);
+    });
+    el('manual-box').hidden = !manual.length;
+
+    var band = el('band'), state, sum, mode;
+    if (!all.length){ mode = ''; state = 'Add the rules from your brief'; sum = 'Fill in what the brief asks for. The checklist builds as you type.'; }
+    else if (!started){ mode = ''; state = 'Paste the caption to start'; sum = plural(nWait, 'rule', 'rules') + ' checked for you, ' + plural(manual.length, 'rule', 'rules') + ' for you to confirm.'; }
+    else if (nFail){ mode = 'hold'; state = 'Hold. ' + nFail + ' to fix'; sum = 'This would break the brief. The red items say what to change.'; }
+    else if (nWait){ mode = ''; state = 'Now paste the caption'; sum = 'The file is checked. ' + plural(nWait, 'caption rule is', 'caption rules are') + ' waiting.'; }
+    else if (left){ mode = ''; state = left + ' left to confirm'; sum = (nOk ? 'Everything checked for you passes. ' : '') + 'Tick the rest once you have looked.'; }
+    else { mode = 'clear'; state = 'Cleared to post'; sum = 'Every check passes and you confirmed the rest.'; }
+    /* once the post is live, the clock is the most urgent thing on the sheet */
+    if (due && due.open){
+      mode = nFail ? 'hold' : ''; state = due.left + ' min left to submit';
+      sum = 'Posted at ' + clock(due.posted) + '. Submit the link by ' + clock(due.end) + '.' + (nFail ? ' ' + plural(nFail, 'check fails', 'checks fail') + ': fix the live post first if you can.' : '');
+    } else if (due && !nFail){
+      mode = 'hold'; state = 'Submission window closed';
+      sum = 'The link had to be in by ' + clock(due.end) + '. If you submitted it in time, tick that box.';
+    }
+    band.className = 'band' + (mode ? ' ' + mode : '');
+    el('camp').textContent = c.name + (S.platform && (c.platforms || []).length > 1 ? ', ' + S.platform : '');
+    el('state').textContent = state; el('sum').textContent = sum;
+    /* one segment per rule; filled = settled (passed or ticked) */
+    var total = items.length, done = nOk + (manual.length - left), m = el('meter'); m.textContent = '';
+    for (var k = 0; k < total; k++) m.appendChild(node('i', k < done ? 'done' : ''));
+
+    var dock = el('dock');
+    dock.className = 'dock' + (mode ? ' ' + mode : '') + (started && all.length && !sheetVisible ? ' show' : '');
+    el('dock-text').textContent = state;
+  }
+
+  /* Reads six small frames from the file, on the device, to look for black bars. */
+  function sampleFrames(vid, done){
+    var n = 6, i = 0, frames = [], cw = 96, ch = Math.max(1, Math.round(96 * vid.videoHeight / vid.videoWidth)), finished = false;
+    var cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+    var ctx = cv.getContext('2d', { willReadFrequently: true });
+    function finish(){ if (finished) return; finished = true; clearTimeout(timer); vid.onseeked = null; done(frames); }
+    var timer = setTimeout(finish, 8000);
+    function next(){ if (i >= n){ finish(); return; } vid.currentTime = vid.duration * (i + 0.5) / n; }
+    vid.onseeked = function(){
+      try {
+        ctx.drawImage(vid, 0, 0, cw, ch);
+        var d = ctx.getImageData(0, 0, cw, ch).data, g = new Uint8Array(cw * ch);
+        for (var k = 0; k < g.length; k++) g[k] = (d[k * 4] * 3 + d[k * 4 + 1] * 6 + d[k * 4 + 2]) / 10;
+        frames.push({ w: cw, h: ch, data: g });
+      } catch (e) {}
+      i++; next();
+    };
+    next();
+  }
+
+  var VIDEO_HINT = 'Add the file to check length, frame shape, resolution and black bars. It is read on your device and never uploaded.';
+  el('video').addEventListener('change', function(e){
+    var f = e.target.files && e.target.files[0], st = el('video-status');
+    if (!f){ S.video = null; st.textContent = VIDEO_HINT; renderResult(); return; }
+    var vid = document.createElement('video'), url = URL.createObjectURL(f);
+    vid.preload = 'metadata';
+    vid.muted = true; vid.playsInline = true;
+    vid.onloadedmetadata = function(){
+      S.video = { w: vid.videoWidth, h: vid.videoHeight, dur: vid.duration };
+      st.textContent = f.name + ', ' + vid.videoWidth + '×' + vid.videoHeight + ', ' + (Math.round(vid.duration * 10) / 10) + ' s';
+      renderResult();
+      sampleFrames(vid, function(frames){
+        URL.revokeObjectURL(url);
+        if (S.video && frames.length){ S.video.bars = Logic.barShare(frames); renderResult(); }
+      });
+    };
+    vid.onerror = function(){ S.video = null; URL.revokeObjectURL(url); st.textContent = 'This file could not be read. Try an MP4.'; renderResult(); };
+    vid.src = url;
+  });
+
+  var POST_HINT = 'After you post, paste the link here. The publish time is read from the link itself, so the page can count down the time left to submit. Nothing is fetched.';
+  function readPost(){
+    var raw = el('post').value.trim(), st = el('post-status'), info = raw ? Logic.postInfo(raw) : null;
+    S.post = info && info.ms ? raw : '';
+    if (!raw) st.textContent = POST_HINT;
+    else if (!info) st.textContent = 'This does not look like a link to a TikTok or Instagram post.';
+    else if (!info.ms) st.textContent = info.platform === 'YouTube' ? 'YouTube links do not carry the publish time, so there is no countdown for them.'
+      : 'This link does not show when the post went up. Copy the full link from the post itself: it has a long id at the end.';
+    else {
+      var timed = (campaign().items || []).some(function(i){ return Logic.isPost(i) && Logic.applies(i, S.platform); });
+      st.textContent = info.platform + ' post, published at ' + clock(info.ms) + '.' + (timed ? '' : ' This campaign has no submission deadline on file.');
+    }
+    renderResult();
+  }
+  el('post').addEventListener('input', readPost);
+  /* keep the countdown moving; put the focus back if the redraw replaced the box that had it */
+  setInterval(function(){
+    if (!S.post) return;
+    var a = document.activeElement && document.activeElement.id;
+    renderResult();
+    if (a && /^m-/.test(a)){ var again = el(a); if (again) again.focus({ preventScroll: true }); }
+  }, 15000);
+
+  var sheetVisible = true;
+  if ('IntersectionObserver' in window){
+    new IntersectionObserver(function(en){ sheetVisible = en[0].isIntersecting; renderResult(); }, { threshold: 0.05 }).observe(el('band'));
+  }
+  el('dock-go').addEventListener('click', function(){ el('sheet').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+
+  /* ---- Your own brief ---- */
+  var B_TEXT = ['n','t','h','p','d','w','x','lo','hi','s','m'], B_BOX = ['a','k'];
+  function readBuilder(){
+    var b = {};
+    B_TEXT.forEach(function(k){ b[k] = el('b-' + k).value; });
+    B_BOX.forEach(function(k){ b[k] = el('b-' + k).checked; });
+    return Brief.sanitize(b);
+  }
+  function fillBuilder(b){
+    B_TEXT.forEach(function(k){ var v = b[k]; el('b-' + k).value = v == null ? (k === 'w' ? 'any' : '') : Array.isArray(v) ? v.join(k === 'd' ? ', ' : '\n') : (k === 't' ? '@' + v : v); });
+    B_BOX.forEach(function(k){ el('b-' + k).checked = !!b[k]; });
+  }
+  function ownChanged(){
+    S.own = readBuilder(); ownCampaign = null; S.ticks[OWN] = {};
+    try { localStorage.setItem('cc.own', JSON.stringify(S.own)); } catch(e){}
+    el('own-status').textContent = '';
+    if (S.cid === OWN){ renderCampaign(); readPost(); }
+  }
+  function pick(id){
+    S.cid = id; S.platform = null; sel.value = id;
+    try { localStorage.setItem('cc.campaign', id); } catch(e){}
+    renderCampaign(); readPost();
+  }
+  /* a link made with "Copy a link to this checklist" opens straight into that checklist */
+  function fromLink(){
+    var b = /^#b=/.test(location.hash) ? Brief.unpack(location.hash) : null;
+    if (!b) return false;
+    S.own = b; ownCampaign = null; S.ticks[OWN] = {}; fillBuilder(b);
+    return true;
+  }
+
+  var sel = el('campaign');
+  CAMPAIGNS.forEach(function(c){ var o = document.createElement('option'); o.value = c.id; o.textContent = c.name; sel.appendChild(o); });
+  var own = document.createElement('option'); own.value = OWN; own.textContent = 'Your own brief…'; sel.appendChild(own);
+  var saved = null; try { saved = localStorage.getItem('cc.campaign'); } catch(e){}
+  var linked = fromLink();
+  if (!linked){ try { S.own = Brief.sanitize(JSON.parse(localStorage.getItem('cc.own') || '{}')); } catch(e){ S.own = {}; } fillBuilder(S.own); }
+  S.cid = linked || saved === OWN ? OWN : (CAMPAIGNS.filter(function(c){ return c.id === saved; })[0] || CAMPAIGNS[0]).id; sel.value = S.cid;
+  el('builder').addEventListener('input', ownChanged);
+  el('own-open').addEventListener('click', function(){ pick(OWN); el('b-n').focus(); });
+  el('own-clear').addEventListener('click', function(){ fillBuilder({}); ownChanged(); el('own-status').textContent = 'Cleared.'; });
+  el('own-link').addEventListener('click', function(){
+    var st = el('own-status');
+    if (Brief.isEmpty(S.own)){ st.textContent = 'Add at least one rule first.'; return; }
+    var url = location.href.split('#')[0] + '#b=' + Brief.pack(S.own);
+    try { history.replaceState(null, '', url); } catch(e){}
+    var done = function(){ st.textContent = 'Link copied. Whoever opens it gets this checklist.'; };
+    if (!navigator.clipboard){ st.textContent = 'The link is in the address bar now. Copy it from there.'; return; }
+    navigator.clipboard.writeText(url).then(done, function(){ st.textContent = 'The link is in the address bar now. Copy it from there.'; });
+  });
+  window.addEventListener('hashchange', function(){ if (fromLink()) pick(OWN); });
+  sel.addEventListener('change', function(){ pick(sel.value); });
+  el('caption').addEventListener('input', function(){ el('copy-status').textContent = ''; renderResult(); });
+  el('sample').addEventListener('click', function(){ el('caption').value = SAMPLE; el('copy-status').textContent = 'Sample pasted. Replace it with your own caption.'; renderResult(); });
+  el('copy').addEventListener('click', function(){
+    var t = el('caption'), st = el('copy-status');
+    if (!navigator.clipboard){ t.select(); st.textContent = 'Selected. Press Ctrl or Cmd + C'; return; }
+    navigator.clipboard.writeText(t.value).then(function(){ st.textContent = 'Copied'; }, function(){ t.select(); st.textContent = 'Selected. Press Ctrl or Cmd + C'; });
+  });
+  renderCampaign();
+  readPost();
+})();
+</script>
+</body>
+</html>
