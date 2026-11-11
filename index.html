@@ -192,6 +192,17 @@ footer{margin:32px 4px 0;font-size:13px;color:var(--muted);display:flex;flex-dir
 .vbar{height:6px;border-radius:99px;background:var(--faint);overflow:hidden} .vbar i{display:block;height:100%;width:0;border-radius:99px;background:var(--accent);box-shadow:0 0 10px var(--accent);transition:width .2s}
 #v-result{width:100%;max-width:260px;aspect-ratio:9/16;background:#000;border-radius:22px;align-self:center;border:1px solid var(--edge)}
 a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--ink)} .btn:disabled{opacity:.5;cursor:default;filter:none}
+.need{display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:18px;border:1px dashed var(--field-edge);border-radius:var(--r-card)}
+.panel > .inline, .vtools > .inline{display:flex;align-items:center;gap:10px;font-weight:500;font-size:15px}
+.vtools > .inline input{-webkit-appearance:none;appearance:none;flex:none;width:24px;height:24px;margin:0;border-radius:50%;cursor:pointer;border:1.5px solid var(--faint);background:var(--field);display:grid;place-content:center}
+.vtools > .inline input::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.2px 2.2px 0;transform:rotate(45deg) translate(-1px,-1px) scale(0)}
+.vtools > .inline input:checked{background:var(--go);border-color:transparent} .vtools > .inline input:checked::after{transform:rotate(45deg) translate(-1px,-1px) scale(1)}
+.cues,.clips{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.cues{max-height:340px;overflow:auto;padding-right:4px}
+.cues li{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:center;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cues input{padding:9px 12px;font-size:15px}
+.clips li{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;padding:10px 10px 10px 14px;background:var(--field);border:1px solid var(--field-edge);border-radius:var(--r-field)}
+.clips .btn{padding:7px 14px;font-size:14px}
 [hidden]{display:none !important}
 
 /* where glass is not available or not wanted, the sheets turn solid */
@@ -252,9 +263,9 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
       <div class="tabs" role="tablist" aria-label="Tools">
         <button type="button" role="tab" id="tab-caption" aria-controls="panel-caption" aria-selected="true">Caption</button>
         <button type="button" role="tab" id="tab-video" aria-controls="panel-video" aria-selected="false">Video</button>
+        <button type="button" role="tab" id="tab-subs" aria-controls="panel-subs" aria-selected="false">Subtitles</button>
+        <button type="button" role="tab" id="tab-clips" aria-controls="panel-clips" aria-selected="false">Cut clips</button>
         <button type="button" role="tab" id="tab-post" aria-controls="panel-post" aria-selected="false">After posting</button>
-        <button type="button" role="tab" id="tab-subs" aria-selected="false" disabled>Subtitles <small>soon</small></button>
-        <button type="button" role="tab" id="tab-clips" aria-selected="false" disabled>Cut clips <small>soon</small></button>
       </div>
 
       <div class="panel" id="panel-caption" role="tabpanel" aria-labelledby="tab-caption">
@@ -302,15 +313,42 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
             </div>
           </div>
         </div>
-        <ul id="v-changes" class="vchanges"></ul>
-        <div class="actions">
-          <button type="button" id="v-make" class="btn primary">Make the fixed file</button>
-          <a id="v-save" class="btn" hidden>Download</a>
-          <span id="v-status" class="hint" role="status"></span>
-        </div>
-        <div id="v-bar" class="vbar" hidden><i></i></div>
-        <video id="v-result" controls playsinline hidden></video>
       </div>
+      </div>
+
+      <div class="panel" id="panel-subs" role="tabpanel" aria-labelledby="tab-subs" hidden>
+        <div id="s-need" class="need"><p class="hint">Subtitles are written from the speech in your clip. Add the clip first.</p><button type="button" class="btn" data-go="video">Add a clip</button></div>
+        <div id="s-box" class="vtools" hidden>
+          <div class="field">
+            <label for="s-lang">Language spoken in the clip</label>
+            <select id="s-lang"><option value="english">English</option><option value="spanish">Spanish</option><option value="portuguese">Portuguese</option><option value="french">French</option><option value="german">German</option><option value="italian">Italian</option><option value="polish">Polish</option><option value="russian">Russian</option><option value="turkish">Turkish</option><option value="indonesian">Indonesian</option><option value="hindi">Hindi</option><option value="arabic">Arabic</option><option value="japanese">Japanese</option><option value="korean">Korean</option></select>
+          </div>
+          <div class="actions">
+            <button type="button" id="s-run" class="btn primary">Write subtitles from the speech</button>
+            <span id="s-status" class="hint" role="status"></span>
+          </div>
+          <p class="hint">The speech is recognised on your device. The first time, the browser downloads a speech model of about 100 MB from Hugging Face and keeps it. Your clip is not uploaded.</p>
+          <label class="inline" id="s-on-box" hidden><input type="checkbox" id="s-on" checked> Burn the subtitles into the file</label>
+          <ol id="s-list" class="cues" aria-label="Subtitle lines. Fix any word the machine misheard."></ol>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-clips" role="tabpanel" aria-labelledby="tab-clips" hidden>
+        <div id="c-need" class="need"><p class="hint">Cut one long video into several clips. Add the video first.</p><button type="button" class="btn" data-go="video">Add a video</button></div>
+        <div id="c-box" class="vtools" hidden>
+          <div class="field">
+            <label for="c-len">Length of each clip, seconds</label>
+            <input type="number" id="c-len" min="5" max="600" inputmode="numeric" value="30">
+            <p id="c-plan" class="hint"></p>
+          </div>
+          <div class="actions">
+            <button type="button" id="c-run" class="btn primary">Make the clips</button>
+            <span id="c-status" class="hint" role="status"></span>
+          </div>
+          <div id="c-bar" class="vbar" hidden><i></i></div>
+          <ul id="c-list" class="clips"></ul>
+          <p class="hint">Every clip gets the frame, text and logo from the Video tab and the subtitles from the Subtitles tab. With subtitles written, cuts fall on pauses between sentences.</p>
+        </div>
       </div>
 
       <div class="panel" id="panel-post" role="tabpanel" aria-labelledby="tab-post" hidden>
@@ -319,6 +357,17 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
         <input type="url" id="post" placeholder="https://www.tiktok.com/@you/video/…" inputmode="url" autocomplete="off" spellcheck="false" aria-describedby="post-status">
         <p id="post-status" class="hint"></p>
       </div>
+      </div>
+
+      <div id="vmake" class="vtools" hidden>
+        <ul id="v-changes" class="vchanges"></ul>
+        <div class="actions">
+          <button type="button" id="v-make" class="btn primary">Make the fixed file</button>
+          <a id="v-save" class="btn" hidden>Download</a>
+          <span id="v-status" class="hint" role="status"></span>
+        </div>
+        <div id="v-bar" class="vbar" hidden><i></i></div>
+        <video id="v-result" controls playsinline hidden></video>
       </div>
     </div>
 
@@ -346,6 +395,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--in
         <li>One click rewrites the caption to fit the brief. Your own words and hashtags stay.</li>
         <li>The file: length, 9:16 frame, resolution, black bars. It is read on your device.</li>
         <li>The Video tab makes a file that fits: 9:16 frame, bars cut off, trimmed to length, logo and text on top. It is made on your device.</li>
+        <li>Subtitles written from the speech and burned in. One long video cut into clips.</li>
         <li>How many views the clip needs before it pays anything.</li>
         <li>After you post: how many minutes are left to submit the link. The publish time is read from the link itself.</li>
         <li>Any campaign: type in what your brief asks for and get a link to that checklist for your whole team.</li>
@@ -843,6 +893,9 @@ var Brief = (function(){
      Decoding, encoding and the MP4 container come from Mediabunny (vendor/, MPL-2.0), loaded only when render() is called. */
 var Editor = (function(){
   var W = 1080, H = 1920, LIB = 'vendor/mediabunny.min.mjs';
+  /* speech recognition, loaded only when subtitles are asked for: Transformers.js (Apache-2.0) and a Whisper model from Hugging Face */
+  var ASR_LIB = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/dist/transformers.min.js', ASR_MODEL = 'onnx-community/whisper-base_timestamped';
+  var ASR_MAX_BYTES = 300 * 1024 * 1024;
   var FONT = '-apple-system, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
   function r1(x){ return Math.round(x * 10) / 10; }
 
@@ -915,6 +968,8 @@ var Editor = (function(){
     if (opts.maxLen > 0 && end - start > opts.maxLen) end = start + opts.maxLen;
     if (start > 0.01 || end < dur - 0.05) changes.push('Trimmed to ' + r1(end - start) + ' s');
 
+    var shown = cuesOn(opts) ? opts.cues.filter(function(c){ return c.t1 > start && c.t0 < end && str(c.text); }).length : 0;
+    if (shown) changes.push('Subtitles burned in: ' + shown + (shown === 1 ? ' line' : ' lines'));
     if (opts.logo) changes.push('Logo added');
     if (str(opts.headline) || str(opts.line2)) changes.push(opts.textSeconds > 0 ? 'Text added for the first ' + r1(opts.textSeconds) + ' s' : 'Text added');
 
@@ -922,6 +977,53 @@ var Editor = (function(){
              trim: { start: start, end: end }, length: end - start, changes: changes };
   }
   function str(v){ return String(v == null ? '' : v).replace(/\s+/g, ' ').trim(); }
+  function cuesOn(opts){ return !!(opts && opts.captions !== false && opts.cues && opts.cues.length); }
+
+  /* Words with times -> subtitle lines. words: [{text, t0, t1}] in seconds.
+     A line holds up to 4 words or 24 characters and ends at a sentence end or a pause. Lines never overlap,
+     and a line stays up until the next one when the pause between them is short, so the text does not flicker. */
+  function cues(words){
+    var out = [], cur = null;
+    (words || []).forEach(function(w){
+      var text = str(w.text);
+      if (!text || !(w.t1 >= w.t0)) return;
+      var brk = !cur || cur.n >= 4 || (cur.text + ' ' + text).length > 24 || w.t0 - cur.t1 > 0.6 || /[.?!…]$/.test(cur.text);
+      if (brk){ cur = { t0: w.t0, t1: w.t1, text: text, n: 1 }; out.push(cur); }
+      else { cur.text += ' ' + text; cur.t1 = w.t1; cur.n++; }
+    });
+    return out.map(function(c, i){
+      var next = out[i + 1], t1 = Math.max(c.t1, c.t0 + 0.3);
+      if (next) t1 = next.t0 - c.t1 < 0.35 ? next.t0 : Math.min(t1, next.t0);
+      return { t0: r3(c.t0), t1: r3(t1), text: c.text };
+    });
+  }
+  function r3(x){ return Math.round(x * 1000) / 1000; }
+  function cueAt(list, t){
+    for (var i = 0; i < list.length; i++) if (t >= list[i].t0 && t < list[i].t1) return list[i];
+    return null;
+  }
+
+  /* Splits a long video into clips of `len` seconds: [{start, end}]. With subtitle lines, a cut moves back to the
+     nearest pause between lines (at most a fifth of the length), so a clip does not end mid-sentence.
+     A clip is never longer than `len`. A tail shorter than `minLen` (default 5 s) is dropped. At most 30 clips. */
+  function segments(dur, len, list, minLen){
+    var out = [], start = 0, min = minLen > 0 ? minLen : 5;
+    if (!(dur > 0) || !(len > 0)) return out;
+    var gaps = [];
+    (list || []).forEach(function(c, i){ var n = list[i + 1]; if (n && n.t0 - c.t1 >= 0.25) gaps.push((c.t1 + n.t0) / 2); });
+    while (dur - start >= min && out.length < 30){
+      var target = start + len, end = target;
+      if (target >= dur) end = dur;
+      else {
+        var best = null;
+        gaps.forEach(function(g){ if (g <= target && g >= target - len * 0.2 && g - start >= min) best = g; });
+        if (best != null) end = best;
+      }
+      out.push({ start: r3(start), end: r3(end) });
+      start = end;
+    }
+    return out;
+  }
 
   /* Where the logo and the text go. Pure: `measure(text, size)` returns the width of the text at that size.
      In the gap above the picture when there is room (blurred mode), otherwise over the top of the picture. */
@@ -959,6 +1061,32 @@ var Editor = (function(){
       ctx.fillStyle = 'rgba(0,0,0,.38)'; ctx.fillRect(0, 0, W, H);
     }
     src(ctx, c.left, c.top, c.width, c.height, p.dst.x, p.dst.y, p.dst.w, p.dst.h);
+
+    if (cuesOn(opts)){
+      var cue = cueAt(opts.cues, t + p.trim.start), words = cue ? str(cue.text) : '';
+      if (words){
+        /* under the picture when there is a gap below it, otherwise over its lower third */
+        var below = p.mode === 'blur' ? H - (p.dst.y + p.dst.h) : 0, cy = below >= 240 ? p.dst.y + p.dst.h + 120 : H * 0.72, size = 60;
+        ctx.save();
+        ctx.font = '800 ' + size + 'px ' + FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+        var rows = [words];
+        if (ctx.measureText(words).width > W * 0.86){
+          var ws = words.split(' '), best = 1, diff = Infinity;
+          for (var k = 1; k < ws.length; k++){
+            var d = Math.abs(ctx.measureText(ws.slice(0, k).join(' ')).width - ctx.measureText(ws.slice(k).join(' ')).width);
+            if (d < diff){ diff = d; best = k; }
+          }
+          rows = [ws.slice(0, best).join(' '), ws.slice(best).join(' ')];
+          while (size > 34 && Math.max(ctx.measureText(rows[0]).width, ctx.measureText(rows[1]).width) > W * 0.86){ size -= 2; ctx.font = '800 ' + size + 'px ' + FONT; }
+        }
+        rows.forEach(function(row, i){
+          var ry = cy + (i - (rows.length - 1) / 2) * size * 1.2;
+          ctx.lineWidth = size * 0.2; ctx.strokeStyle = 'rgba(0,0,0,.92)'; ctx.strokeText(row, W / 2, ry);
+          ctx.fillStyle = '#FFFFFF'; ctx.fillText(row, W / 2, ry);
+        });
+        ctx.restore();
+      }
+    }
 
     var hd = header(p, opts, t, function(text, size){ ctx.font = '800 ' + size + 'px ' + FONT; return ctx.measureText(text).width; });
     if (!hd) return;
@@ -1022,14 +1150,48 @@ var Editor = (function(){
     return { blob: new Blob([output.target.buffer], { type: 'video/mp4' }), plan: p, warnings: warnings };
   }
 
-  return { W: W, H: H, bars: bars, plan: plan, header: header, paint: paint, render: render, supported: supported, canvas: canvas };
+  /* Listens to the file and returns the words with their times: [{text, t0, t1}]. `language` is a Whisper language name.
+     Runs on the person's machine. The first call downloads the speech model (kept by the browser afterwards). */
+  var asr = null;
+  async function transcribe(file, language, onStatus){
+    var say = onStatus || function(){};
+    if (file.size > ASR_MAX_BYTES) throw new Error('Subtitles work on files up to 300 MB for now. Cut the clip first, then write subtitles for it.');
+    say('Reading the sound…');
+    var AC = window.AudioContext || window.webkitAudioContext, ac = new AC({ sampleRate: 16000 }), audio;
+    try { audio = await ac.decodeAudioData(await file.arrayBuffer()); }
+    catch (e) { throw new Error('The sound in this file could not be read.'); }
+    finally { if (ac.close) ac.close(); }
+    var n = audio.length, mono = new Float32Array(n), chs = audio.numberOfChannels;
+    for (var c = 0; c < chs; c++){ var data = audio.getChannelData(c); for (var i = 0; i < n; i++) mono[i] += data[i] / chs; }
+    if (!asr){
+      say('Getting the speech tools…');
+      var T = await import(ASR_LIB);
+      var progress = function(x){ if (x && x.status === 'progress' && /\.onnx/.test(x.file || '') && x.progress != null) say('Getting the speech model, one time only: ' + Math.round(x.progress) + '%'); };
+      var gpu = typeof navigator !== 'undefined' && !!navigator.gpu;
+      try {
+        asr = await T.pipeline('automatic-speech-recognition', ASR_MODEL, gpu
+          ? { device: 'webgpu', dtype: { encoder_model: 'fp32', decoder_model_merged: 'q4' }, progress_callback: progress }
+          : { device: 'wasm', dtype: 'q8', progress_callback: progress });
+      } catch (e) {
+        if (!gpu) throw e;
+        asr = await T.pipeline('automatic-speech-recognition', ASR_MODEL, { device: 'wasm', dtype: 'q8', progress_callback: progress });
+      }
+    }
+    say('Listening to the clip…');
+    var out = await asr(mono, { return_timestamps: 'word', chunk_length_s: 30, stride_length_s: 5, language: language || 'english', task: 'transcribe' });
+    return ((out && out.chunks) || []).map(function(ch){ return { text: str(ch.text), t0: ch.timestamp[0], t1: ch.timestamp[1] == null ? ch.timestamp[0] + 0.4 : ch.timestamp[1] }; })
+      .filter(function(w){ return w.text && w.t0 != null; });
+  }
+
+  return { W: W, H: H, bars: bars, plan: plan, header: header, paint: paint, render: render, supported: supported, canvas: canvas,
+           cues: cues, cueAt: cueAt, segments: segments, transcribe: transcribe };
 })();
 </script>
 <script>
 var CAMPAIGNS = [{"id": "aries-8ball-free-stock", "name": "Shake the magic 8-ball, film your free stock reveal", "organizer": "Aries", "url": "https://contentrewards.com/c/campaigns/9f48000c-4fb1-433f-b9e7-3efb18cd2ca7", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 2.5, "min_payout": 10.0}, {"platform": "Instagram", "rate_per_1k": 2.5, "min_payout": 10.0}, {"platform": "YouTube", "rate_per_1k": 2.5, "min_payout": 10.0}], "items": [{"group": "caption", "text": "Tag Aries in your caption. On TikTok, Instagram and YouTube the handle is @tradearies.", "kind": "mention", "value": "tradearies"}, {"group": "caption", "text": "Add \"Terms apply\" to your caption.", "kind": "contains", "value": "Terms apply"}, {"group": "caption", "text": "Hashtags: #aries8ball", "kind": "contains", "value": "#aries8ball"}, {"group": "caption", "text": "Disclose the partnership with #ad, or use the platform's paid partnership label", "kind": "caption_or_other", "values": ["#ad"]}, {"group": "video", "text": "The 8-ball, the shake and the reveal should all be on camera.", "kind": "manual"}, {"group": "video", "text": "Show the stock you got and its value.", "kind": "manual"}, {"group": "video", "text": "Film real reveals only. Don't fake, stage, edit or misstate the stock", "kind": "manual"}, {"group": "video", "text": "hint at big wins, guaranteed returns or \"free money.\"", "kind": "manual"}, {"group": "video", "text": "Don't give investment advice or tell people what to buy, hold or sell.", "kind": "manual"}, {"group": "video", "text": "Don't show account numbers, balances or personal information on screen.", "kind": "manual"}, {"group": "video", "text": "Don't change, cover or remove the Aries logo or name.", "kind": "manual"}, {"group": "post", "text": "Share it as a short vertical video on TikTok, Instagram Reels or YouTube Shorts.", "kind": "manual"}, {"group": "post", "text": "The offer is for US residents only", "kind": "manual"}, {"group": "post", "text": "No fake accounts, self-referrals or paying people to sign up through your link.", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "backrooms-nemoris-it-eats-light", "name": "Backrooms Nemoris: It Eats Light", "organizer": "Nemoris", "url": "https://contentrewards.com/c/campaigns/ed8fc7e4-4a78-4577-8410-e4a77ce0fea6", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 10.0, "min_payout": 2.0}, {"platform": "Instagram", "rate_per_1k": 10.0, "min_payout": 2.0}, {"platform": "YouTube", "rate_per_1k": 10.0, "min_payout": 2.0}], "items": [{"group": "caption", "text": "Identify the project as Backrooms Nemoris in the caption", "kind": "contains", "value": "Backrooms Nemoris"}, {"group": "caption", "text": "clearly disclose that the post is sponsored", "kind": "manual"}, {"group": "video", "text": "Use only the footage and assets provided in this campaign.", "kind": "manual"}, {"group": "video", "text": "Keep the 1979 Soviet-era found-footage atmosphere", "kind": "manual"}, {"group": "video", "text": "Do not reveal major plot turns, the ending, or the unknown entity.", "kind": "manual"}, {"group": "video", "text": "End with a clear call to action", "kind": "manual"}, {"group": "post", "text": "Link directly to the full episode in your TikTok or Instagram bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "chris-heyn-show-clipping", "name": "The Chris Heyn Show Clipping", "organizer": "Chris Heyn Jr. Clipping", "url": "https://contentrewards.com/c/campaigns/19859ab5-057c-4cff-847c-93155c896827", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 1.5, "min_payout": 3.0}, {"platform": "Instagram", "rate_per_1k": 1.5, "min_payout": 3.0}, {"platform": "YouTube", "rate_per_1k": 1.5, "min_payout": 3.0}], "items": [{"group": "caption", "text": "#chrisheynjr on EVERY platform", "kind": "contains", "value": "#chrisheynjr"}, {"group": "caption", "text": "TikTok: tag @thechshow", "kind": "mention", "value": "thechshow", "platform": "TikTok"}, {"group": "caption", "text": "Instagram Reels: tag @chrisheynshow", "kind": "mention", "value": "chrisheynshow", "platform": "Instagram"}, {"group": "caption", "text": "YouTube Shorts: tag @ChrisHeynShow", "kind": "mention", "value": "ChrisHeynShow", "platform": "YouTube"}, {"group": "video", "text": "every shot of Chris must come from the approved Chris Heyn Show episodes", "kind": "manual"}, {"group": "video", "text": "Clean sources only: no other creator's watermark", "kind": "manual"}, {"group": "video", "text": "HOOK in the first second.", "kind": "manual"}, {"group": "video", "text": "Vertical 9:16 only", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "Never repost a raw segment.", "kind": "manual"}, {"group": "video", "text": "NO loud meme edits: Impact-font captions, vine booms, zoom punches", "kind": "manual"}, {"group": "video", "text": "Never cut or caption his words so they mean something he didn't say.", "kind": "manual"}, {"group": "video", "text": "Never imply a brand sponsors Chris", "kind": "manual"}, {"group": "video", "text": "YouTube Shorts under 60 seconds", "kind": "video_duration", "platform": "YouTube", "max": 60}, {"group": "video", "text": "YouTube: add the song with YouTube's in-app sound picker", "kind": "manual", "platform": "YouTube"}, {"group": "post", "text": "Post the SAME video on TikTok, Instagram Reels AND YouTube Shorts.", "kind": "manual"}, {"group": "post", "text": "post from a personal or creator account", "kind": "manual"}, {"group": "post", "text": "No botted views or likes.", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "cod-warzone-s1", "name": "Call of Duty: Warzone Season 1", "organizer": "Clipping Culture", "platforms": ["TikTok", "Instagram Reels"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 2, "min_payout": 5}, {"platform": "Instagram", "rate_per_1k": 1.5, "min_payout": 4}], "items": [{"group": "caption", "text": "Tags @callofduty", "kind": "mention", "value": "callofduty"}, {"group": "caption", "text": "Includes the phrase “Season 1 out now”", "kind": "contains", "value": "Season 1 out now"}, {"group": "caption", "text": "Credits the song: Agust D (Suga from BTS) - “Haegeum”", "kind": "contains_all", "values": ["Agust D (Suga from BTS)", "Haegeum"], "template": "🎵 Agust D (Suga from BTS) - “Haegeum”"}, {"group": "caption", "text": "Ad disclosure sits on its own line", "kind": "one_of_line", "values": ["#Ad", "#Advertisement", "#Sponsored"]}, {"group": "caption", "text": "Ad disclosure is the first hashtag", "kind": "first_hashtag", "values": ["#Ad", "#Advertisement", "#Sponsored"]}, {"group": "caption", "text": "No more than 3 other hashtags", "kind": "max_extra_hashtags", "n": 3, "values": ["#Ad", "#Advertisement", "#Sponsored"]}, {"group": "caption", "text": "Does not call the trailer “gameplay”", "kind": "not_contains", "value": "gameplay"}, {"group": "video", "text": "Only footage from the official content link", "kind": "manual"}, {"group": "video", "text": "Official Warzone logo is clearly visible", "kind": "video_logo"}, {"group": "video", "text": "Original audio only, no added music", "kind": "video_original_audio"}, {"group": "video", "text": "No AI voice or AI narration", "kind": "manual"}, {"group": "video", "text": "English content, high quality", "kind": "manual"}, {"group": "video", "text": "On-screen text matches what the clip shows", "kind": "manual"}, {"group": "post", "text": "@callofduty is tagged from the suggestion list, not just typed", "kind": "manual"}, {"group": "post", "text": "Likes are visible on the account", "kind": "manual"}, {"group": "post", "text": "This video is not posted on another account on the same platform", "kind": "manual"}, {"group": "post", "text": "The post will stay live for at least 30 days", "kind": "manual"}, {"group": "submit", "text": "Link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "flight-clips-pilot-ryan", "name": "Flight Clips - $2 per 1K views", "organizer": "Pilot Ryan", "url": "https://contentrewards.com/c/campaigns/0d0e33cf-d4b6-44fb-8006-a30478933d60", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 2.0, "min_payout": 2.0}, {"platform": "Instagram", "rate_per_1k": 2.0, "min_payout": 2.0}, {"platform": "YouTube", "rate_per_1k": 2.0, "min_payout": 2.0}], "items": [{"group": "caption", "text": "TikTok: tag @ryantseko in the caption", "kind": "mention", "value": "ryantseko", "platform": "TikTok"}, {"group": "caption", "text": "Instagram: tag @ryantseko in the caption", "kind": "mention", "value": "ryantseko", "platform": "Instagram"}, {"group": "caption", "text": "YouTube Shorts: tag @ryantseko10X in the caption", "kind": "mention", "value": "ryantseko10X", "platform": "YouTube"}, {"group": "caption", "text": "Add \"Follow @ryantseko for more\" on screen or in the caption", "kind": "caption_or_other", "values": ["Follow @ryantseko for more"], "other": "screen"}, {"group": "caption", "text": "No false claims in captions (no fake crashes or emergencies)", "kind": "manual"}, {"group": "video", "text": "Use footage from the Dropbox link only", "kind": "manual"}, {"group": "video", "text": "Open on the most dramatic moment in the first 2 seconds", "kind": "manual"}, {"group": "video", "text": "Vertical 9:16", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "10 to 45 seconds", "kind": "video_duration", "min": 10, "max": 45}, {"group": "video", "text": "Must be edited - no full videos reposted as is", "kind": "manual"}, {"group": "video", "text": "No other creator's watermark or logo", "kind": "manual"}, {"group": "post", "text": "Keep the post public for at least 30 days", "kind": "manual"}, {"group": "post", "text": "Post for a US audience: English captions and US-friendly hooks.", "kind": "manual"}, {"group": "post", "text": "Posts with no likes, comments, or shares will be rejected", "kind": "manual"}, {"group": "post", "text": "Bought views, likes, or comments = rejection and removal from the campaign", "kind": "manual"}, {"group": "post", "text": "One account per person", "kind": "manual"}, {"group": "submit", "text": "Include a screenshot of the post's audience demographics (country breakdown) with every submission", "kind": "manual"}, {"group": "submit", "text": "Posts earning $10+ must send a screen recording of that video's analytics (Geography 50%+ US", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "mack-camferdam-twitch-clips", "name": "Mack Camferdam - Twitch Clips", "organizer": "Mack Camferdam", "url": "https://contentrewards.com/c/campaigns/79d6abae-b305-42e9-9ebe-82e47583adb5", "platforms": ["TikTok"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 1.0, "min_payout": 1.0}], "items": [{"group": "caption", "text": "Put \"Mack_Camferdam on Twitch\" in the TikTok description", "kind": "contains", "value": "Mack_Camferdam on Twitch"}, {"group": "caption", "text": "and tag @mack.camferdam.", "kind": "mention", "value": "mack.camferdam"}, {"group": "video", "text": "Keep my facecam in frame the whole time.", "kind": "manual"}, {"group": "video", "text": "Burn the caption into the top third", "kind": "screen_text_zone"}, {"group": "video", "text": "White text, black outline", "kind": "manual"}, {"group": "video", "text": "9:16 vertical", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "No letterboxing, no borders", "kind": "video_no_bars"}, {"group": "video", "text": "Full screen, bright and readable", "kind": "manual"}, {"group": "video", "text": "No watermarks from other apps and no other streamers' overlays or names in frame.", "kind": "manual"}, {"group": "video", "text": "Do not open on a menu, a mod list, or a loading screen.", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "maximum-life-clips", "name": "Maximum Life Clips: Sermons & Podcasts", "organizer": "Maximum Life", "url": "https://contentrewards.com/c/campaigns/370da744-85e8-48b6-8005-a4157f9ab9fe", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 1.5, "min_payout": 3.0}, {"platform": "Instagram", "rate_per_1k": 1.5, "min_payout": 3.0}, {"platform": "YouTube", "rate_per_1k": 1.5, "min_payout": 3.0}], "items": [{"group": "caption", "text": "Caption must include #MaximumLife and Get the Maximum Life+ app", "kind": "contains_all", "values": ["#MaximumLife", "Get the Maximum Life+ app"]}, {"group": "caption", "text": "Name Dr. Zach Terry, Code Red Talk or Ladylike on screen or in caption", "kind": "caption_or_other", "values": ["Dr. Zach Terry", "Code Red Talk", "Ladylike"], "other": "screen"}, {"group": "video", "text": "Hook in the first 2 seconds with the strongest line", "kind": "manual"}, {"group": "video", "text": "Clips 15 to 90 seconds", "kind": "video_duration", "min": 15, "max": 90}, {"group": "video", "text": "Vertical 9:16", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "Burned-in captions on every clip", "kind": "screen_captions"}, {"group": "video", "text": "Keep every quote in context. No cuts that change the meaning", "kind": "manual"}, {"group": "video", "text": "Do not alter Scripture quotes or add words anyone did not say", "kind": "manual"}, {"group": "video", "text": "No mocking music, memes or reaction overlays", "kind": "manual"}, {"group": "video", "text": "No children's faces from church services", "kind": "manual"}, {"group": "post", "text": "Add link in bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "millionaire-hot-takes", "name": "Millionaire Hot Takes | Viral Clipping", "organizer": "Crawford Legacy Group", "url": "https://contentrewards.com/c/campaigns/07d35069-c63d-4382-bf14-0a70921f7693", "platforms": ["Instagram", "TikTok"], "updated": "2026-11-10", "payout": [{"platform": "Instagram", "rate_per_1k": 2.75, "min_payout": 25.0}, {"platform": "TikTok", "rate_per_1k": 2.75, "min_payout": 25.0}], "items": [{"group": "caption", "text": "TAG @cashonlyjon in BOTH your Reel and caption.", "kind": "mention", "value": "cashonlyjon"}, {"group": "caption", "text": "INCLUDE \"Follow @cashonlyjon for more\" in your caption.", "kind": "contains", "value": "Follow @cashonlyjon for more"}, {"group": "post", "text": "TAG @cashonlyjon in BOTH your Reel and caption.", "kind": "manual"}, {"group": "post", "text": "KEEP LIKES VISIBLE on your posts.", "kind": "manual"}, {"group": "video", "text": "CREATE ORIGINAL, HIGH-QUALITY EDITS. No copied, recycled, or low-effort edits.", "kind": "manual"}, {"group": "video", "text": "Use cinematic or trending background music with Jon's voice clearly audible.", "kind": "manual"}, {"group": "video", "text": "Use default CapCut captions, bouncing yellow text, or excessive emojis.", "kind": "manual"}, {"group": "video", "text": "Use random stock footage, gameplay, or distracting effects.", "kind": "manual"}, {"group": "video", "text": "Minimum clip length 10 seconds", "kind": "video_duration", "min": 10}, {"group": "post", "text": "Repost other creators' edits or use fake engagement.", "kind": "manual"}, {"group": "post", "text": "Add link in bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "taplot-interactive-drama", "name": "Taplot - Interactive Drama", "organizer": "Taplot", "url": "https://contentrewards.com/c/campaigns/04ea0556-2842-426b-8ff6-ee85233ac326", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 1.5, "min_payout": 5.0}, {"platform": "Instagram", "rate_per_1k": 1.5, "min_payout": 5.0}, {"platform": "YouTube", "rate_per_1k": 1.5, "min_payout": 5.0}], "items": [{"group": "caption", "text": "include #taplot and #taplotpartner in every video (required for disclosure)", "kind": "contains_all", "values": ["#taplot", "#taplotpartner"]}, {"group": "caption", "text": "The game name in your on-screen text, caption and pinned reply must match the game shown in the video.", "kind": "manual"}, {"group": "caption", "text": "Caption all lowercase", "kind": "lowercase"}, {"group": "video", "text": "On-screen text all lowercase", "kind": "screen_text_lowercase"}, {"group": "post", "text": "Comments all lowercase too", "kind": "manual"}, {"group": "video", "text": "Use the exact link: taplot.ai/cc", "kind": "manual"}, {"group": "video", "text": "On-screen CTA with the link taplot.ai/cc for at least 5 seconds", "kind": "screen_text", "values": ["taplot.ai/cc"], "seconds": 5}, {"group": "video", "text": "The CTA also names the game", "kind": "manual"}, {"group": "video", "text": "Hook: a dramatic or romantic moment", "kind": "manual"}, {"group": "video", "text": "At least 20 seconds", "kind": "video_duration", "min": 20}, {"group": "post", "text": "reply to their comment with the link and the game name, then pin that reply", "kind": "manual"}, {"group": "post", "text": "minimum audience of 40%+ US-based viewers to qualify (Verified via screen recording)", "kind": "manual"}, {"group": "post", "text": "Add link in bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "thats-extra-roblox-shorts-remix", "name": "That's Extra! | Roblox Shorts Remix", "organizer": "Storyboat Global", "url": "https://contentrewards.com/c/campaigns/0a58a063-f14d-4de9-98ba-d5215209a666", "platforms": ["YouTube"], "updated": "2026-11-10", "payout": [{"platform": "YouTube", "rate_per_1k": 1.5, "min_payout": 1.5}], "items": [{"group": "caption", "text": "Include \"Full song on YouTube: Storyboat Global — That's Extra!\" in the caption.", "kind": "contains", "value": "Full song on YouTube: Storyboat Global — That's Extra!"}, {"group": "caption", "text": "Include \"Unofficial fictional Roblox parody\" in the caption.", "kind": "contains", "value": "Unofficial fictional Roblox parody"}, {"group": "caption", "text": "caption using \"Ad\" or \"Paid promotion for Storyboat Global\"", "kind": "manual"}, {"group": "caption", "text": "Do not hide the disclosure among hashtags.", "kind": "manual"}, {"group": "post", "text": "Publish on YouTube Shorts only.", "kind": "manual"}, {"group": "video", "text": "9:16 Short", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "15–30 seconds long", "kind": "video_duration", "min": 15, "max": 30}, {"group": "video", "text": "At least 720p", "kind": "video_min_side", "n": 720}, {"group": "video", "text": "Roblox-themed", "kind": "manual"}, {"group": "video", "text": "Keep the song clearly audible as the main audio.", "kind": "manual"}, {"group": "video", "text": "Readable on-screen credit: \"That's Extra! — Storyboat Global\"", "kind": "screen_text", "values": ["That's Extra! — Storyboat Global"], "seconds": 1}, {"group": "video", "text": "Use accurate English captions or readable on-screen text", "kind": "manual"}, {"group": "video", "text": "Do not imply Roblox endorsement", "kind": "manual"}, {"group": "post", "text": "Use YouTube's native Remix from our exact source", "kind": "manual"}, {"group": "post", "text": "Keep each submitted post public and materially unchanged for at least 30 days", "kind": "manual"}, {"group": "post", "text": "All claimed views and engagement must come from genuine, voluntary viewers.", "kind": "manual"}, {"group": "post", "text": "No paid boosts, ads, paid traffic suppliers", "kind": "manual"}, {"group": "submit", "text": "Obtain campaign draft approval before posting.", "kind": "manual"}, {"group": "submit", "text": "submit a screenshot showing that attribution with the Short URL", "kind": "manual"}, {"group": "submit", "text": "unedited native-analytics recording within 48 hours of reaching that threshold", "kind": "manual"}, {"group": "submit", "text": "Submit each post URL only once.", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}]}, {"id": "zutobi-driving-lessons-clipping", "name": "Zutobi Driving Lessons Clipping (US creators only)", "organizer": "Zutobi", "url": "https://contentrewards.com/c/campaigns/471a8ddb-a18e-470e-94fa-5abc124de68f", "platforms": ["TikTok", "Instagram", "YouTube"], "updated": "2026-11-10", "payout": [{"platform": "TikTok", "rate_per_1k": 3.0, "min_payout": 12.0}, {"platform": "Instagram", "rate_per_1k": 3.0, "min_payout": 12.0}, {"platform": "YouTube", "rate_per_1k": 3.0, "min_payout": 12.0}], "items": [{"group": "post", "text": "US-based creators only, or at least 60% US audience.", "kind": "manual"}, {"group": "submit", "text": "Analytics screenshot required on request.", "kind": "manual"}, {"group": "post", "text": "Account must be public, active for 3+ months, with at least 10 public videos.", "kind": "manual"}, {"group": "post", "text": "No new accounts created for this campaign.", "kind": "manual"}, {"group": "video", "text": "One clip = one idea: one question, one mistake, one situation or one tip. 20-45 seconds recommended.", "kind": "manual"}, {"group": "video", "text": "Hook in the first 0-2 seconds", "kind": "manual"}, {"group": "video", "text": "End every clip with the Zutobi packshot (last 2-3 seconds) with a short call to action.", "kind": "manual"}, {"group": "video", "text": "The Zutobi watermark stays visible for the whole clip", "kind": "video_logo"}, {"group": "video", "text": "No black bars", "kind": "video_no_bars"}, {"group": "video", "text": "No stretching", "kind": "manual"}, {"group": "video", "text": "Keep the top ~250 px, bottom ~350 px and right ~150 px of the 1080x1920 frame clear of text", "kind": "screen_text_clear", "top": 250, "bottom": 350, "right": 150}, {"group": "video", "text": "Burned-in captions for everything Jacqueline says", "kind": "screen_captions"}, {"group": "video", "text": "3-6 words per caption line", "kind": "manual"}, {"group": "video", "text": "Jacqueline's voice clearly louder than music (music at about 10-20% of her volume). Licensed music only.", "kind": "manual"}, {"group": "video", "text": "Don't speed up her voice more than 1.1x.", "kind": "manual"}, {"group": "video", "text": "never cut Jacqueline's words so the meaning changes", "kind": "manual"}, {"group": "video", "text": "Export 9:16 vertical", "kind": "video_aspect", "value": "9:16"}, {"group": "video", "text": "1080x1920", "kind": "video_min_side", "n": 1080}, {"group": "video", "text": "MP4 (H.264 + AAC)", "kind": "video_codec", "video": "h264", "audio": "aac"}, {"group": "post", "text": "Add link in bio", "kind": "manual"}, {"group": "submit", "text": "Drafts require pre-approval before posting", "kind": "manual"}, {"group": "submit", "text": "Content Rewards: link submitted within 30 minutes of posting", "kind": "submit_window", "minutes": 30}], "note": "Part of this brief is only visible after joining the campaign."}];
 (function(){
   var el = function(id){ return document.getElementById(id); };
-  var S = { cid: null, platform: null, video: null, post: '', ticks: {}, own: {}, tab: 'caption', src: null, fit: 'blur', logo: null, busy: false };
+  var S = { cid: null, platform: null, video: null, post: '', ticks: {}, own: {}, tab: 'caption', src: null, fit: 'blur', logo: null, busy: false, cues: null, capsOn: true, clips: [] };
   var OWN = '__own', ownCampaign = null;
   /* stands in for the first line when the caption has no words yet; the status line asks to replace it */
   var FIRST_LINE = 'Your own first line goes here.';
@@ -1073,6 +1235,7 @@ var CAMPAIGNS = [{"id": "aries-8ball-free-stock", "name": "Shake the magic 8-bal
     box.hidden = list.length < 2;
     el('builder').hidden = S.cid !== OWN; el('own-open').hidden = S.cid === OWN;
     renderResult();
+    if (S.src && !el('c-len').dataset.touched){ var ml0 = maxLen(); if (ml0) el('c-len').value = ml0; }
     if (S.src) renderTools();
   }
 
@@ -1220,7 +1383,8 @@ var CAMPAIGNS = [{"id": "aries-8ball-free-stock", "name": "Shake the magic 8-bal
 
   el('video').addEventListener('change', function(e){
     var f = e.target.files && e.target.files[0], st = el('video-status');
-    dropSource(); dropResult(); S.video = null; el('vtools').hidden = true; el('v-status').textContent = '';
+    dropSource(); dropResult(); dropClips(); S.video = null; S.cues = null; el('s-list').textContent = ''; el('s-status').textContent = ''; el('c-status').textContent = '';
+    el('vtools').hidden = true; el('v-status').textContent = ''; renderTools();
     if (!f){ st.textContent = VIDEO_HINT; renderResult(); return; }
     st.textContent = 'Reading ' + f.name + '…';
     inspect(f, function(meta, vid, url){
@@ -1241,13 +1405,22 @@ var CAMPAIGNS = [{"id": "aries-8ball-free-stock", "name": "Shake the magic 8-bal
   }
   function toolOpts(){
     return { fit: S.fit, start: Number(el('v-start').value) || 0, end: Number(el('v-end').value) || 0, maxLen: maxLen() || 0,
-             headline: el('v-headline').value, line2: el('v-line2').value, textSeconds: Number(el('v-secs').value) || 0, logo: S.logo };
+             headline: el('v-headline').value, line2: el('v-line2').value, textSeconds: Number(el('v-secs').value) || 0, logo: S.logo,
+             cues: S.cues, captions: S.capsOn };
   }
   var previewTimer = null;
   function renderTools(){
-    var box = el('vtools');
-    if (!S.src){ box.hidden = true; return; }
+    var box = el('vtools'), has = !!S.src;
+    el('vmake').hidden = !has || (S.tab !== 'video' && S.tab !== 'subs');
+    el('s-need').hidden = has; el('s-box').hidden = !has; el('c-need').hidden = has; el('c-box').hidden = !has;
+    if (!has){ box.hidden = true; return; }
     box.hidden = false;
+    el('s-on-box').hidden = !(S.cues && S.cues.length);
+    el('s-run').disabled = S.busy; el('c-run').disabled = S.busy || !Editor.supported();
+    var segs = Editor.segments(S.src.meta.dur, Number(el('c-len').value) || 0, S.cues);
+    el('c-plan').textContent = segs.length ? 'This video is ' + Math.round(S.src.meta.dur) + ' s long: ' + plural(segs.length, 'clip', 'clips') + '.' : 'This video is too short to cut at that length.';
+    el('c-run').textContent = segs.length ? 'Make ' + plural(segs.length, 'clip', 'clips') : 'Make the clips';
+    if (!segs.length) el('c-run').disabled = true;
     var meta = { w: S.src.meta.w, h: S.src.meta.h, dur: S.src.meta.dur, bars: S.src.meta.sides }, o = toolOpts(), p = Editor.plan(meta, o), ml = maxLen();
     el('v-fit-box').hidden = p.mode === 'full';
     [].forEach.call(el('v-fit').children, function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-fit') === S.fit)); });
@@ -1257,6 +1430,7 @@ var CAMPAIGNS = [{"id": "aries-8ball-free-stock", "name": "Shake the magic 8-bal
     (p.changes.length ? p.changes : ['This file already fits the frame and the length. Add text or a logo if the brief asks for them.']).forEach(function(c){ ul.appendChild(node('li', null, c)); });
     var can = Editor.supported();
     el('v-make').disabled = S.busy || !p.changes.length || !can;
+    el('v-make').textContent = S.tab === 'subs' ? 'Make the file with subtitles' : 'Make the fixed file';
     if (!can) el('v-status').textContent = 'Making files needs a current Chrome, Edge or Safari on a computer.';
     clearTimeout(previewTimer); previewTimer = setTimeout(function(){ preview(p, o); }, 120);
   }
@@ -1303,7 +1477,59 @@ var CAMPAIGNS = [{"id": "aries-8ball-free-stock", "name": "Shake the magic 8-bal
   });
 
   /* ---- Tabs ---- */
-  var TABS = ['caption', 'video', 'post'];
+  /* ---- Subtitles ---- */
+  function fmt(t){ var m = Math.floor(t / 60), sec = t - m * 60; return m + ':' + (sec < 10 ? '0' : '') + sec.toFixed(1); }
+  function renderCues(){
+    var ol = el('s-list'); ol.textContent = '';
+    (S.cues || []).forEach(function(c, i){
+      var li = node('li'), inp = document.createElement('input');
+      li.appendChild(node('span', null, fmt(c.t0)));
+      inp.type = 'text'; inp.value = c.text; inp.maxLength = 80; inp.setAttribute('aria-label', 'Subtitle line at ' + fmt(c.t0));
+      inp.addEventListener('input', function(){ S.cues[i].text = inp.value; renderTools(); });
+      li.appendChild(inp); ol.appendChild(li);
+    });
+  }
+  el('s-on').addEventListener('change', function(){ S.capsOn = el('s-on').checked; renderTools(); });
+  el('s-run').addEventListener('click', function(){
+    if (!S.src || S.busy) return;
+    var st = el('s-status'), src = S.src;
+    S.busy = true; renderTools();
+    Editor.transcribe(src.file, el('s-lang').value, function(msg){ st.textContent = msg; })
+      .then(function(words){
+        if (S.src !== src) return;
+        S.cues = Editor.cues(words); S.capsOn = true; el('s-on').checked = true; renderCues();
+        st.textContent = S.cues.length ? plural(S.cues.length, 'line', 'lines') + ' written. Read them through and fix what the machine misheard.' : 'No speech was found in this clip.';
+      }, function(err){ st.textContent = (err && err.message) || 'The subtitles could not be written.'; })
+      .then(function(){ S.busy = false; renderTools(); });
+  });
+
+  /* ---- Cut clips ---- */
+  function dropClips(){ S.clips.forEach(function(u){ URL.revokeObjectURL(u); }); S.clips = []; el('c-list').textContent = ''; el('c-bar').hidden = true; }
+  el('c-len').addEventListener('input', function(){ el('c-len').dataset.touched = '1'; renderTools(); });
+  el('c-run').addEventListener('click', function(){
+    if (!S.src || S.busy) return;
+    var src = S.src, segs = Editor.segments(src.meta.dur, Number(el('c-len').value) || 0, S.cues), st = el('c-status'), bar = el('c-bar'), fill = bar.firstChild;
+    var meta = { w: src.meta.w, h: src.meta.h, dur: src.meta.dur, bars: src.meta.sides }, base = src.file.name.replace(/\.[^.]+$/, ''), i = 0;
+    if (!segs.length) return;
+    S.busy = true; dropClips(); bar.hidden = false; fill.style.width = '0'; renderTools();
+    function next(){
+      if (i >= segs.length || S.src !== src){ bar.hidden = true; st.textContent = plural(i, 'clip', 'clips') + ' made.'; S.busy = false; renderTools(); return; }
+      var seg = segs[i], o = toolOpts(); o.start = seg.start; o.end = seg.end; o.maxLen = 0;
+      st.textContent = 'Making clip ' + (i + 1) + ' of ' + segs.length + '…';
+      Editor.render(src.file, meta, o, function(x){ fill.style.width = Math.round((i + x) / segs.length * 100) + '%'; })
+        .then(function(res){
+          var url = URL.createObjectURL(res.blob), name = base + '-clip' + (i + 1 < 10 ? '0' : '') + (i + 1) + '.mp4', li = node('li'), a = node('a', 'btn', 'Download');
+          S.clips.push(url); a.href = url; a.download = name;
+          li.appendChild(node('span', null, name + ', ' + fmt(seg.start) + ' to ' + fmt(seg.end) + ', ' + (Math.round(res.blob.size / 104857.6) / 10) + ' MB'));
+          li.appendChild(a); el('c-list').appendChild(li);
+          i++; next();
+        }, function(err){ bar.hidden = true; st.textContent = 'Stopped at clip ' + (i + 1) + ': ' + ((err && err.message) || 'something went wrong.'); S.busy = false; renderTools(); });
+    }
+    next();
+  });
+  [].forEach.call(document.querySelectorAll('[data-go]'), function(b){ b.addEventListener('click', function(){ setTab(b.getAttribute('data-go')); el('video').focus(); }); });
+
+  var TABS = ['caption', 'video', 'subs', 'clips', 'post'];
   function setTab(name, focus){
     if (TABS.indexOf(name) < 0) name = 'caption';
     S.tab = name;
@@ -1313,7 +1539,7 @@ var CAMPAIGNS = [{"id": "aries-8ball-free-stock", "name": "Shake the magic 8-bal
     });
     try { localStorage.setItem('cc.tab', name); } catch(e){}
     if (focus) el('tab-' + name).focus();
-    if (name === 'video') renderTools();
+    renderTools();
   }
   TABS.forEach(function(t, i){
     el('tab-' + t).addEventListener('click', function(){ setTab(t); });
