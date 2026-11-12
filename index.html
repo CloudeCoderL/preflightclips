@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-xqyiJfPQnudKSEXLFVjAGEVHntR2anv/rIBMhcB5MdY=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-4Dzzr/wqYAPp2gINqi7Q9V/yDWde4ff7FN3eIgjEQoQ=' 'sha256-Au3OYGUZ4yQzIl86oJo3ROpFaKyeYVhxH4fAgx9LbdY=' 'sha256-6Fw5SsdANVnAFqRrePn8AAxzFWc31dkGHbGfMHbB8Ls=' 'sha256-d4BfefpmoIl2+5PG0uRH6MKzBNlph0zAvjyKQIuRGwE=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-KJl9bsMhnPkaIs3HcbB1jIh2W20chth/Z5re5KVjvwU='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-xqyiJfPQnudKSEXLFVjAGEVHntR2anv/rIBMhcB5MdY=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-A9qJTIr90/BHqRMHSMl1UeGFupGOahgjSL3i6/DxJjA=' 'sha256-Au3OYGUZ4yQzIl86oJo3ROpFaKyeYVhxH4fAgx9LbdY=' 'sha256-6Fw5SsdANVnAFqRrePn8AAxzFWc31dkGHbGfMHbB8Ls=' 'sha256-d4BfefpmoIl2+5PG0uRH6MKzBNlph0zAvjyKQIuRGwE=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-KJl9bsMhnPkaIs3HcbB1jIh2W20chth/Z5re5KVjvwU='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
@@ -1204,70 +1204,6 @@ var Editor = (function(){
   var ASR_MAX_BYTES = 300 * 1024 * 1024;
   var FONT = '-apple-system, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
   function r1(x){ return Math.round(x * 10) / 10; }
-
-  /* ---- What the apps draw over a vertical video, on a 1080×1920 frame ----
-     None of the three apps publishes these numbers for ordinary posts. They are the middle of what safe-zone guides and
-     checkers gave on 2026-11-12 (TikTok top 130–240, bottom 380–484, right column 140; Reels top 220–270, bottom 420;
-     Shorts bottom 300–380), checked against a real brief that asks for top 250, bottom 350, right 150 to stay clear.
-     The layout shifts with the phone and the app version, so the page calls them approximate.
-     Each zone: what covers it, and the rectangle. `glyph` says how the preview sketches it. */
-  var ZONES = {
-    tiktok: { name: 'TikTok', zones: [
-      { id: 'top', what: 'the Following and For You tabs', x: 0, y: 0, w: W, h: 160, glyph: 'tabs' },
-      { id: 'right', what: 'the like, comment and share buttons', x: W - 150, y: 820, w: 150, h: H - 440 - 820, glyph: 'buttons' },
-      { id: 'bottom', what: 'the username, caption and sound', x: 0, y: H - 440, w: W, h: 440, glyph: 'caption' } ] },
-    reels: { name: 'Instagram Reels', zones: [
-      { id: 'top', what: 'the Reels title and camera button', x: 0, y: 0, w: W, h: 220, glyph: 'tabs' },
-      { id: 'right', what: 'the like, comment and share buttons', x: W - 140, y: 960, w: 140, h: H - 420 - 960, glyph: 'buttons' },
-      { id: 'bottom', what: 'the username, caption and audio', x: 0, y: H - 420, w: W, h: 420, glyph: 'caption' } ] },
-    shorts: { name: 'YouTube Shorts', zones: [
-      { id: 'top', what: 'the search and menu buttons', x: 0, y: 0, w: W, h: 140, glyph: 'tabs' },
-      { id: 'right', what: 'the like, comment and share buttons', x: W - 150, y: 760, w: 150, h: H - 380 - 760, glyph: 'buttons' },
-      { id: 'bottom', what: 'the channel name, title and Subscribe button', x: 0, y: H - 380, w: W, h: 380, glyph: 'caption' } ] }
-  };
-  /* Where the tools put text and logos so that no app covers them: below the tallest top bar, above the tallest
-     bottom block, and narrow enough to stay off the button columns. */
-  var SAFE = (function(){
-    var s = { top: 0, bottom: 0, side: 0 };
-    Object.keys(ZONES).forEach(function(k){ ZONES[k].zones.forEach(function(z){
-      if (z.id === 'top') s.top = Math.max(s.top, z.h);
-      if (z.id === 'bottom') s.bottom = Math.max(s.bottom, z.h);
-      if (z.id === 'right') s.side = Math.max(s.side, z.w);
-    }); });
-    return { top: s.top + 30, bottom: s.bottom + 20, side: s.side + 10 };
-  })();
-
-  /* 'TikTok', 'Instagram Reels', 'YouTube' (the campaign's own words) -> 'tiktok' | 'reels' | 'shorts', or null */
-  function app(name){
-    var s = String(name || '').toLowerCase();
-    return /tik\s*tok/.test(s) ? 'tiktok' : /insta|reel/.test(s) ? 'reels' : /you\s*tube|short/.test(s) ? 'shorts' : null;
-  }
-
-  /* The zones for one app, plus the brief's own keep-clear margins when it has them (`clear`: {top, bottom, left, right}
-     in pixels of a 1080×1920 frame). The brief wins: its zones are always checked, whatever app is picked. */
-  function zones(platform, clear){
-    var key = ZONES[platform] ? platform : app(platform), out = key ? ZONES[key].zones.map(function(z){ return Object.assign({ app: ZONES[key].name }, z); }) : [];
-    var c = clear || {};
-    function add(id, x, y, w, h){ if (w > 0 && h > 0) out.push({ id: id, app: 'brief', what: "the brief's keep-clear margin", x: x, y: y, w: w, h: h, glyph: 'brief' }); }
-    var t = Math.max(0, Number(c.top) || 0), b = Math.max(0, Number(c.bottom) || 0), l = Math.max(0, Number(c.left) || 0), r = Math.max(0, Number(c.right) || 0);
-    add('brief-top', 0, 0, W, Math.min(t, H)); add('brief-bottom', 0, H - Math.min(b, H), W, Math.min(b, H));
-    add('brief-left', 0, 0, Math.min(l, W), H); add('brief-right', W - Math.min(r, W), 0, Math.min(r, W), H);
-    return out;
-  }
-  function overlap(a, b){
-    var w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
-    return w > 0 && h > 0 ? w * h : 0;
-  }
-  /* Which of the things the tools draw land under a zone: [{what, label, zone}]. A box counts as covered when at least
-     a twentieth of it is under the zone, so a shadow touching the edge does not raise an alarm. */
-  function clashes(boxes, list){
-    var out = [];
-    (boxes || []).forEach(function(b){
-      var area = b.w * b.h;
-      (list || []).forEach(function(z){ if (area > 0 && overlap(b, z) >= area * 0.05) out.push({ what: b.what, label: b.label, zone: z }); });
-    });
-    return out;
-  }
 
   /* Black bars on each side as a share of the frame: {top, bottom, left, right}.
      frames: small grayscale frames {w, h, data}. A side counts only as far as it is dark in most frames
