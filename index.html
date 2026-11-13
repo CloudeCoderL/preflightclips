@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-xqyiJfPQnudKSEXLFVjAGEVHntR2anv/rIBMhcB5MdY=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-tvAz1SjnUsJoHAPoa5BowTHd4K3NjpxT9vqs1k+EZm0=' 'sha256-6Fw5SsdANVnAFqRrePn8AAxzFWc31dkGHbGfMHbB8Ls=' 'sha256-GQelV7UI1p1rbEDJyGXFAfVDGMglF6xfwuDzVcolVP0=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-cLRPbtUXJknlQOKnTJ9ZYqhnj5JRWTB1DCgw+EDksgM='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-xqyiJfPQnudKSEXLFVjAGEVHntR2anv/rIBMhcB5MdY=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-tvAz1SjnUsJoHAPoa5BowTHd4K3NjpxT9vqs1k+EZm0=' 'sha256-6Fw5SsdANVnAFqRrePn8AAxzFWc31dkGHbGfMHbB8Ls=' 'sha256-A6n3yrV+27EG8Z6soHlU2yqRlD9kao0bgFWXq0baMVw=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-cLRPbtUXJknlQOKnTJ9ZYqhnj5JRWTB1DCgw+EDksgM='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
@@ -616,7 +616,7 @@ input[type=date]{font:inherit;color:var(--ink);background:var(--field);border:1p
   <footer>
     <span>Campaign rules are summarised from the public briefs. Always read the full brief; if the two disagree, the brief wins.</span>
     <span>PreflightClips is an independent tool and is not affiliated with Content Rewards, Whop or any brand named here.</span>
-    <span>Guides: <a href="guides/tiktok-safe-zone.html">TikTok safe zone</a> · <a href="guides/instagram-reels-safe-zone.html">Reels safe zone</a> · <a href="guides/youtube-shorts-safe-zone.html">Shorts safe zone</a> · <a href="guides/all-apps-safe-zone.html">One safe zone for all apps</a> · <a href="guides/clip-payout-calculator.html">Clip payout calculator</a></span>
+    <span>Guides: <a href="guides/tiktok-safe-zone.html">TikTok safe zone</a> · <a href="guides/instagram-reels-safe-zone.html">Reels safe zone</a> · <a href="guides/youtube-shorts-safe-zone.html">Shorts safe zone</a> · <a href="guides/all-apps-safe-zone.html">One safe zone for all apps</a> · <a href="guides/clip-payout-calculator.html">Clip payout calculator</a> · <a href="guides/campaigns.html">Campaign rule checklists</a></span>
     <span><a href="legal.html">Terms, refunds and privacy</a></span>
   </footer>
 </div>
@@ -2754,6 +2754,9 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
   CAMPAIGNS.forEach(function(c){ var o = document.createElement('option'); o.value = c.id; o.textContent = c.name; sel.appendChild(o); });
   var own = document.createElement('option'); own.value = OWN; own.textContent = 'Your own brief…'; sel.appendChild(own);
   var saved = null; try { saved = localStorage.getItem('cc.campaign'); } catch(e){}
+  /* a guide page links here with ?c=<campaign id> to open that campaign's checklist */
+  var asked = (location.search.match(/[?&]c=([a-z0-9-]+)/) || [])[1];
+  if (asked && CAMPAIGNS.some(function(c){ return c.id === asked; })) saved = asked;
   var linked = fromLink();
   if (!linked){ try { S.own = Brief.sanitize(JSON.parse(localStorage.getItem('cc.own') || '{}')); } catch(e){ S.own = {}; } fillBuilder(S.own); }
   S.cid = linked || saved === OWN ? OWN : (CAMPAIGNS.filter(function(c){ return c.id === saved; })[0] || CAMPAIGNS[0]).id; sel.value = S.cid;
