@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; script-src 'sha256-nSdiYvR+mu/DWgiCwaozf0CrtKxifiJmKcD8ZO572+o='; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Clip payout calculator: views to minimum payout</title>
+<meta name="description" content="Work out what a clipping campaign clip has earned and how many views it needs to reach the minimum payout. Free calculator with common rates.">
+<link rel="canonical" href="https://cloudecoderl.github.io/preflightclips/guides/clip-payout-calculator.html">
+<meta property="og:title" content="Clip payout calculator: views to minimum payout">
+<meta property="og:description" content="Work out what a clipping campaign clip has earned and how many views it needs to reach the minimum payout. Free calculator with common rates.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://cloudecoderl.github.io/preflightclips/guides/clip-payout-calculator.html">
+<style>
+:root{--bg:#F4F6FA;--surface:#FFFFFF;--ink:#14213D;--muted:#566079;--line:#D8DEE8;--accent:#0A6BDB;--zone:#E5484D;--safe:#2F9E63;color-scheme:light}
+@media (prefers-color-scheme: dark){:root{--bg:#0B1020;--surface:#121A2E;--ink:#E9EDF6;--muted:#9AA5BC;--line:#26324D;--accent:#5AA9FF;--zone:#FF6B6F;--safe:#4CC38A;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif}
+main{max-width:72ch;margin:0 auto;padding-block:32px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--accent)}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.brand{font-weight:700;font-size:18px;text-decoration:none;color:var(--ink)}
+.muted{color:var(--muted)}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.12;letter-spacing:-.02em;margin:28px 0 10px;text-wrap:balance}
+h2{font-size:23px;line-height:1.25;margin:40px 0 8px;text-wrap:balance}
+p,ul,ol{margin:10px 0}
+ul,ol{padding-left:22px} li{margin:4px 0}
+.lead{font-size:19px;color:var(--muted)}
+.fig{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:24px;align-items:start;margin:24px 0}
+@media (max-width:560px){.fig{grid-template-columns:1fr}.fig svg{max-width:240px}}
+.fig svg{width:100%;height:auto;border-radius:18px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:16px}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-top:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;border-top:0}
+td.n{white-space:nowrap;font-variant-numeric:tabular-nums}
+.wrap{overflow-x:auto}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:20px 0}
+.cta{display:inline-block;margin-top:6px;padding:12px 20px;border-radius:999px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600}
+.dl{font-weight:600}
+nav.more ul{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:8px 20px}
+label{display:block;font-weight:600;margin:14px 0 4px}
+input{font:inherit;width:100%;max-width:280px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.out{font-size:34px;font-weight:800;letter-spacing:-.02em;margin:18px 0 0;font-variant-numeric:tabular-nums}
+.bar{height:14px;border-radius:7px;background:var(--line);overflow:hidden;margin:12px 0 6px;max-width:420px}
+.bar i{display:block;height:100%;width:0;background:var(--safe)}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><a class="brand" href="../">✓ PreflightClips</a><span class="muted">Updated November 2026</span></div>
+
+  <h1>Clip payout calculator</h1>
+  <p class="lead">How much has your clip earned, and how many views until it reaches the campaign's minimum payout?</p>
+  <div class="box">
+    <label for="views">Views so far</label><input id="views" type="number" inputmode="numeric" min="0" value="1800">
+    <label for="rate">Rate per 1,000 views, $</label><input id="rate" type="number" inputmode="decimal" min="0" step="0.01" value="2">
+    <label for="min">Minimum payout, $</label><input id="min" type="number" inputmode="decimal" min="0" step="0.01" value="5">
+    <label for="max">Maximum payout per post, $ (optional)</label><input id="max" type="number" inputmode="decimal" min="0" step="1" value="1000">
+    <p class="out" id="earned" aria-live="polite">$3.60</p>
+    <div class="bar" aria-hidden="true"><i id="fill"></i></div>
+    <p id="note" aria-live="polite"></p>
+  </div>
+  <h2>How clipping payouts work</h2>
+  <p>Most clipping campaigns pay a fixed rate per 1,000 views, often between $1 and $3 depending on the platform. The brief also sets a <strong>minimum payout</strong>:
+  a clip that earns less than that pays nothing, and a <strong>maximum payout</strong> per post.</p>
+  <p>So the number to watch is not the total views but the views needed to cross the minimum. At $2 per 1,000 views and a $5 minimum, a clip needs 2,500 views before it pays anything.</p>
+  <h2>Views needed for common campaign rates</h2>
+  <div class="wrap"><table><thead><tr><th>Rate per 1,000 views</th><th>Minimum $4</th><th>Minimum $5</th><th>Minimum $10</th></tr></thead><tbody>
+    <tr><td class="n">$1.00</td><td class="n">4,000</td><td class="n">5,000</td><td class="n">10,000</td></tr>
+    <tr><td class="n">$1.50</td><td class="n">2,667</td><td class="n">3,334</td><td class="n">6,667</td></tr>
+    <tr><td class="n">$2.00</td><td class="n">2,000</td><td class="n">2,500</td><td class="n">5,000</td></tr>
+    <tr><td class="n">$3.00</td><td class="n">1,334</td><td class="n">1,667</td><td class="n">3,334</td></tr>
+  </tbody></table></div>
+  <p class="muted">Campaigns also check engagement and audience country and can reject clips that break the brief. Read the full brief: if this page and the brief disagree, the brief wins.</p>
+  <div class="box">
+    <h2 style="margin-top:0">Stop losing clips to the brief</h2>
+    <p>A clip rejected for a missing tag or a covered logo earns nothing at any view count. PreflightClips checks the caption, the frame and the submission window before you post. Free, in your browser.</p>
+    <a class="cta" href="../?s=guide">Open the checker</a>
+  </div>
+
+  <nav class="more" aria-label="More guides"><h2>More guides</h2><ul><li><a href="tiktok-safe-zone.html">TikTok safe zone</a></li><li><a href="instagram-reels-safe-zone.html">Instagram Reels safe zone</a></li><li><a href="youtube-shorts-safe-zone.html">YouTube Shorts safe zone</a></li><li><a href="all-apps-safe-zone.html">Safe zone for all three apps</a></li></ul></nav>
+  <footer>PreflightClips is an independent tool for clippers and is not affiliated with TikTok, Instagram, YouTube, Content Rewards, Whop or any brand. <a href="../legal.html">Terms and privacy</a></footer>
+</main>
+<script>
+(function(){
+  var f = function(id){ return document.getElementById(id); };
+  var money = function(v){ return '$' + v.toFixed(2); };
+  var num = function(v){ return Math.round(v).toLocaleString('en-US'); };
+  function run(){
+    var views = Math.max(0, +f('views').value || 0), rate = Math.max(0, +f('rate').value || 0),
+        min = Math.max(0, +f('min').value || 0), max = +f('max').value || 0;
+    var earned = views / 1000 * rate, capped = max > 0 && earned > max;
+    if (capped) earned = max;
+    var need = rate > 0 ? Math.ceil(min / rate * 1000) : 0;
+    f('earned').textContent = money(earned);
+    var share = min > 0 ? Math.min(1, earned / min) : 1;
+    f('fill').style.width = (share * 100) + '%';
+    var msg;
+    if (rate <= 0) msg = 'Enter the rate per 1,000 views from the brief.';
+    else if (min > 0 && earned < min) msg = num(need - views) + ' more views to reach the minimum payout (' + num(need) + ' views in total). Below the minimum, the clip pays nothing.';
+    else msg = capped ? 'This clip has reached the maximum payout for one post.' : 'Above the minimum payout: this clip pays out.';
+    f('note').textContent = msg;
+  }
+  ['views', 'rate', 'min', 'max'].forEach(function(id){ f(id).addEventListener('input', run); });
+  run();
+})();
+</script>
+</body>
+</html>
