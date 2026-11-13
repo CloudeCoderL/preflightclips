@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-xqyiJfPQnudKSEXLFVjAGEVHntR2anv/rIBMhcB5MdY=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-tvAz1SjnUsJoHAPoa5BowTHd4K3NjpxT9vqs1k+EZm0=' 'sha256-6Fw5SsdANVnAFqRrePn8AAxzFWc31dkGHbGfMHbB8Ls=' 'sha256-nPt8otlPYrwdojWxsk2pgUbhjtJmuuX5CTEh+atxNFc=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-cLRPbtUXJknlQOKnTJ9ZYqhnj5JRWTB1DCgw+EDksgM='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-xqyiJfPQnudKSEXLFVjAGEVHntR2anv/rIBMhcB5MdY=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-tvAz1SjnUsJoHAPoa5BowTHd4K3NjpxT9vqs1k+EZm0=' 'sha256-6Fw5SsdANVnAFqRrePn8AAxzFWc31dkGHbGfMHbB8Ls=' 'sha256-GQelV7UI1p1rbEDJyGXFAfVDGMglF6xfwuDzVcolVP0=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-cLRPbtUXJknlQOKnTJ9ZYqhnj5JRWTB1DCgw+EDksgM='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
@@ -3137,7 +3137,7 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
     var q = (location.search.match(/[?&]s=([a-z]+)/) || [])[1], r = '';
     try { r = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
     var by = { tt: 'tiktok', ig: 'instagram', li: 'linkedin', rd: 'reddit', x: 'x', yt: 'youtube' };
-    if (q && by[q]) return by[q];
+    if (q) return by[q] || 'other';   /* any other mark (e.g. ?s=me for our own visits) is 'other', never an ad source */
     if (!r || r === location.hostname) return 'direct';
     return /tiktok/.test(r) ? 'tiktok' : /instagram/.test(r) ? 'instagram' : /linkedin|lnkd/.test(r) ? 'linkedin' : /reddit/.test(r) ? 'reddit'
       : /(^|\.)(x|twitter)\.com$|^t\.co$/.test(r) ? 'x' : /youtube|youtu\.be/.test(r) ? 'youtube' : /google\./.test(r) ? 'google' : 'other';
