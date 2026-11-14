@@ -4,26 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-xqyiJfPQnudKSEXLFVjAGEVHntR2anv/rIBMhcB5MdY=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-GveRAb6/wxKzqmmYeoz6qs65fMALNOZSX2w1DqM9Dxo=' 'sha256-6Fw5SsdANVnAFqRrePn8AAxzFWc31dkGHbGfMHbB8Ls=' 'sha256-lA12oKfi8oDGjjRWMNPibso51QGRVzBJoQkWp/dKYXE=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-mDGEKMK6cH+FER7ZjOkLohPY0wuaKgNqMEfZ8z2ABK4='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-RmOCVRaYGOF27KycgXz+ZOhJiR6BC9ntyVeSGLoRF6o=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-GveRAb6/wxKzqmmYeoz6qs65fMALNOZSX2w1DqM9Dxo=' 'sha256-6Fw5SsdANVnAFqRrePn8AAxzFWc31dkGHbGfMHbB8Ls=' 'sha256-FBT29fxHvp4H5o2oJ0Kk87OSQ1ZnZIAbKPBPdQfnSEQ=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-mDGEKMK6cH+FER7ZjOkLohPY0wuaKgNqMEfZ8z2ABK4='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
 /* Shown inside another site's frame, the page hides itself, so nobody can be tricked into clicking it there. */
+/* The old address moves visitors to the new one, keeping ?s= and passing where they came from as ?ref= (for the visit counter). */
+if (location.hostname === "cloudecoderl.github.io") (function(){ var u = new URL("https://preflightclips.com/" + location.search + location.hash); try { if (document.referrer && !u.searchParams.has("s")) u.searchParams.set("ref", new URL(document.referrer).hostname); } catch (e) {} location.replace(u.href); })();
 try { if (window.top !== window.self && window.top.location.origin !== window.location.origin) throw 0; } catch (e) { document.documentElement.hidden = true; }
 </script>
 <meta name="description" content="Pick the campaign, paste your caption, add the file. See what would get your clip rejected before you post. Free, runs in your browser.">
-<link rel="canonical" href="https://cloudecoderl.github.io/preflightclips/">
+<link rel="canonical" href="https://preflightclips.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PreflightClips">
 <meta property="og:title" content="PreflightClips: check your clip against the campaign brief">
 <meta property="og:description" content="Caption, 9:16 frame, length, safe zones and the submit window, checked before you post. Free check, runs in your browser.">
-<meta property="og:url" content="https://cloudecoderl.github.io/preflightclips/">
-<meta property="og:image" content="https://cloudecoderl.github.io/preflightclips/og.png">
+<meta property="og:url" content="https://preflightclips.com/">
+<meta property="og:image" content="https://preflightclips.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="PreflightClips checklist: 2 things to fix before the clip is cleared">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PreflightClips","url":"https://cloudecoderl.github.io/preflightclips/","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","description":"Checks a short-form clip against a clipping campaign brief before posting: caption rules, 9:16 frame, length, safe zones and the submission window.","offers":[{"@type":"Offer","name":"Free","price":"0","priceCurrency":"USD"},{"@type":"Offer","name":"Pro","price":"9","priceCurrency":"USD"},{"@type":"Offer","name":"Team","price":"29","priceCurrency":"USD"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PreflightClips","url":"https://preflightclips.com/","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","description":"Checks a short-form clip against a clipping campaign brief before posting: caption rules, 9:16 frame, length, safe zones and the submission window.","offers":[{"@type":"Offer","name":"Free","price":"0","priceCurrency":"USD"},{"@type":"Offer","name":"Pro","price":"9","priceCurrency":"USD"},{"@type":"Offer","name":"Team","price":"29","priceCurrency":"USD"}]}</script>
 <style>
 /* Liquid glass look for the same page (same markup, same script; only this stylesheet differs).
    Idea: a wallpaper with depth behind everything, and the interface as sheets of glass floating on it.
@@ -3159,8 +3161,8 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
      own server: no cookie, no identifier, nothing about the person. Off when the plan server is not set up. ---- */
   var HIT_API = /^https:\/\/[A-Za-z0-9.-]+$/.test(String((ACC || {}).api || '')) ? ACC.api : '';
   function source(){
-    var q = (location.search.match(/[?&]s=([a-z]+)/) || [])[1], r = '';
-    try { r = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+    var q = (location.search.match(/[?&]s=([a-z]+)/) || [])[1], r = (location.search.match(/[?&]ref=([a-z0-9.-]+)/) || [])[1] || '';
+    if (!r) try { r = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
     var by = { tt: 'tiktok', ig: 'instagram', li: 'linkedin', rd: 'reddit', x: 'x', yt: 'youtube', dc: 'discord', wh: 'whop', em: 'email' };
     if (q) return by[q] || 'other';   /* any other mark (e.g. ?s=me for our own visits) is 'other', never an ad source */
     if (!r || r === location.hostname) return 'direct';
