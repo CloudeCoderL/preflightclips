@@ -54,6 +54,14 @@ input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offs
 .filters button,.filters select{font:inherit;font-size:15px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 .filters button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 #top tr[hidden]{display:none}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:14px 0}
+.stats div{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stats b{display:block;font-size:28px;font-variant-numeric:tabular-nums}.stats span{color:var(--muted);font-size:14px}
+.btn2{font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+select{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);margin-right:8px}
+label.chk{display:flex;gap:8px;align-items:center;font-weight:500}label.chk input{width:auto}
+button.cta{border:0;cursor:pointer;font:inherit;font-weight:600}button.cta:disabled{opacity:.6}
+#mine[hidden],#join[hidden],#m-private-box[hidden]{display:none}
 footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
 </style>
 </head>

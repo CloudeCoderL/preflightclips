@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-RmOCVRaYGOF27KycgXz+ZOhJiR6BC9ntyVeSGLoRF6o=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-8qM9qyNcciGzExwASlRanTWpCjTjSzNmqXurwLKaTTU=' 'sha256-M9Tyxb8uhocwtF0pYeiFKTl9oC8xJelzacBj4wFBfKA=' 'sha256-RQLUNTiqAmNopdPOzHA08MUpbiCWgvYEzgeiuXlSdD4=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-0JATxDk0f7K27r4p05nh+VFv+3xdWDeTzd7l+IK1jeY='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-RmOCVRaYGOF27KycgXz+ZOhJiR6BC9ntyVeSGLoRF6o=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-8qM9qyNcciGzExwASlRanTWpCjTjSzNmqXurwLKaTTU=' 'sha256-M9Tyxb8uhocwtF0pYeiFKTl9oC8xJelzacBj4wFBfKA=' 'sha256-63RwPxtEL0gaQB+vUvWViTJQa3TtvzR8nLU18JvcavA=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-0JATxDk0f7K27r4p05nh+VFv+3xdWDeTzd7l+IK1jeY='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
@@ -3387,10 +3387,10 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
     return /tiktok/.test(r) ? 'tiktok' : /instagram/.test(r) ? 'instagram' : /linkedin|lnkd/.test(r) ? 'linkedin' : /reddit/.test(r) ? 'reddit'
       : /(^|\.)(x|twitter)\.com$|^t\.co$/.test(r) ? 'x' : /youtube|youtu\.be/.test(r) ? 'youtube' : /google\./.test(r) ? 'google' : /discord/.test(r) ? 'discord' : /whop\.com$/.test(r) ? 'whop' : 'other';
   }
-  var SRC = source();
+  var SRC = source(), REF = (location.search.match(/[?&]r=([a-z0-9_-]{3,24})(?:&|$)/) || [])[1] || null;   /* a partner's link: counted for that partner */
   function hit(ev){
     if (!HIT_API) return;
-    try { fetch(HIT_API + '/v1/hit', { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify({ ev: ev, src: SRC }), keepalive: true, credentials: 'omit', referrerPolicy: 'no-referrer' }).catch(function(){}); } catch (e) {}
+    try { fetch(HIT_API + '/v1/hit', { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify(REF ? { ev: ev, src: SRC, ref: REF } : { ev: ev, src: SRC }), keepalive: true, credentials: 'omit', referrerPolicy: 'no-referrer' }).catch(function(){}); } catch (e) {}
   }
   (function(){ var seen = null; try { seen = sessionStorage.getItem('pfc.v'); sessionStorage.setItem('pfc.v', '1'); } catch (e) {} if (!seen) hit('view'); })();
 

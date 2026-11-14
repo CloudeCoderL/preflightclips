@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; script-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; script-src 'sha256-2gE24Ve3EB9VzVoTKeGkBxebGnOuhWOU7KTeijdf3dU='; connect-src https://preflightclips-access.preflight-ebc.workers.dev; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>PreflightClips partner program: earn 30% of every payment</title>
 <meta name="description" content="Recommend PreflightClips to clippers and earn 30% of every payment your customers make for 12 months, paid weekly in crypto.">
@@ -54,6 +54,14 @@ input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offs
 .filters button,.filters select{font:inherit;font-size:15px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 .filters button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 #top tr[hidden]{display:none}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:14px 0}
+.stats div{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stats b{display:block;font-size:28px;font-variant-numeric:tabular-nums}.stats span{color:var(--muted);font-size:14px}
+.btn2{font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+select{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);margin-right:8px}
+label.chk{display:flex;gap:8px;align-items:center;font-weight:500}label.chk input{width:auto}
+button.cta{border:0;cursor:pointer;font:inherit;font-weight:600}button.cta:disabled{opacity:.6}
+#mine[hidden],#join[hidden],#m-private-box[hidden]{display:none}
 footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
 </style>
 </head>
@@ -65,12 +73,44 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-si
   <p class="lead">Know clippers or run a clipping community? Share your link. When someone you sent pays for Pro or Team, you get 30% of every payment they make for 12 months.</p>
   <div class="box">
     <p style="margin-top:0"><strong>Pro is $12 a month and Team $49.</strong> One Team customer who stays a year earns you $176. Ten Pro customers earn you $36 a month.</p>
-    <a class="cta" href="mailto:preflightclips@gmail.com?subject=Partner%20link">Get your partner link</a>
   </div>
+
+  <div class="box" id="mine" hidden>
+    <h2 style="margin-top:0">Your partner link</h2>
+    <p><code id="m-link"></code> <button type="button" class="btn2" id="m-copy">Copy link</button> <span id="m-copied" class="muted" role="status"></span></p>
+    <div class="stats">
+      <div><b id="m-visits">0</b><span>visits by your link</span></div>
+      <div><b id="m-people">0</b><span>started a trial or paid</span></div>
+      <div><b id="m-customers">0</b><span>paying customers</span></div>
+      <div><b id="m-earned">$0</b><span>earned so far (30%)</span></div>
+    </div>
+    <p class="muted" id="m-payout"></p>
+    <p class="muted">Payouts go out weekly once your share is $10 or more. Keep the private link to this page: it is the only way to see your numbers.</p>
+    <p id="m-private-box" hidden><strong>Your private link:</strong> <code id="m-private"></code> <button type="button" class="btn2" id="m-copy2">Copy</button></p>
+  </div>
+
+  <div class="box" id="join">
+    <h2 style="margin-top:0">Get your link</h2>
+    <form id="f" novalidate>
+      <label for="f-code">Name in your link</label>
+      <input id="f-code" maxlength="24" autocomplete="off" spellcheck="false" placeholder="yourname" pattern="[a-z0-9_-]{3,24}">
+      <p class="muted">3 to 24 letters, digits, - or _. Your link: preflightclips.com/?r=<span id="f-prev">yourname</span></p>
+      <label for="f-coin">Paid in</label>
+      <select id="f-coin"><option>USDC</option><option>USDT</option></select>
+      <select id="f-net" aria-label="Network"><option value="base">Base</option><option value="solana">Solana</option><option value="arbitrum">Arbitrum</option><option value="bsc">BNB Smart Chain</option><option value="ethereum">Ethereum</option><option value="tron">Tron</option></select>
+      <label for="f-addr">Your wallet address on that network</label>
+      <input id="f-addr" maxlength="64" autocomplete="off" spellcheck="false" placeholder="0x… or your Solana / Tron address">
+      <p class="muted">A public receiving address only. Nobody from PreflightClips will ever ask for your seed phrase or private key.</p>
+      <label class="chk"><input type="checkbox" id="f-ok"> I agree to the rules below</label>
+      <p><button type="submit" class="cta" id="f-go">Create my link</button></p>
+      <p id="f-status" role="status"></p>
+    </form>
+  </div>
+
   <h2>How it works</h2>
   <ol>
-    <li>Write to <a href="mailto:preflightclips@gmail.com?subject=Partner%20link">preflightclips@gmail.com</a>: the name you want in your link, where you will share it, and the crypto address you want to be paid to (USDC or USDT, with the network).</li>
-    <li>You get a link like <code>preflightclips.com/?r=yourname</code>. Put it in your bio, your Discord, your videos.</li>
+    <li>Pick a name and the address to be paid to. You get your link right away: no account, no e-mail.</li>
+    <li>Put <code>preflightclips.com/?r=yourname</code> in your bio, your Discord, your videos.</li>
     <li>Whoever opens it is yours for 30 days: if they start a free trial or pay in that time, the customer counts for you, renewals included.</li>
     <li>Every week you get 30% of the payments your customers made, once your share is $10 or more.</li>
   </ol>
@@ -81,10 +121,10 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-si
     <li>No ads that bid on the name PreflightClips.</li>
     <li>Say what the tool really does: it checks a clip against the brief; it does not promise approval or views.</li>
   </ul>
-  <p class="muted">Breaking a rule ends the partnership and the unpaid share. Free trials and free checks earn nothing until the customer pays. Payouts are in crypto only for now.</p>
+  <p class="muted">Breaking a rule ends the partnership and the unpaid share. Free trials and free checks earn nothing until the customer pays. Payouts are in crypto only for now. Questions: <a href="mailto:preflightclips@gmail.com?subject=Partner">preflightclips@gmail.com</a>.</p>
   <nav class="more" aria-label="More guides"><h2>More guides</h2><ul><li><a href="tiktok-safe-zone.html">TikTok safe zone</a></li><li><a href="instagram-reels-safe-zone.html">Instagram Reels safe zone</a></li><li><a href="youtube-shorts-safe-zone.html">YouTube Shorts safe zone</a></li><li><a href="all-apps-safe-zone.html">Safe zone for all three apps</a></li><li><a href="clip-payout-calculator.html">Clip payout calculator</a></li><li><a href="campaigns.html">Campaign rule checklists</a></li><li><a href="best-paying-clipping-campaigns.html">Best paying campaigns now</a></li></ul></nav>
   <footer>PreflightClips is an independent tool for clippers and is not affiliated with TikTok, Instagram, YouTube, Content Rewards, Whop or any brand. <a href="../legal.html">Terms and privacy</a></footer>
 </main>
-
+<script>(function(){var API="https://preflightclips-access.preflight-ebc.workers.dev",K='pfc.partner',$=function(i){return document.getElementById(i);};function get(){try{return localStorage.getItem(K);}catch(e){return null;}}function put(v){try{localStorage.setItem(K,v);}catch(e){}}function copy(t,st){if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){st.textContent='Copied';});}function show(d,secret){$('mine').hidden=false;$('join').hidden=true;$('m-link').textContent=d.link;$('m-visits').textContent=d.visits;$('m-people').textContent=d.people;$('m-customers').textContent=d.customers;$('m-earned').textContent='$'+Number(d.earned_usd).toFixed(2);$('m-payout').textContent='Paid to: '+d.payout+(d.active?'':' (this partnership is switched off)');if(secret){var u=location.origin+location.pathname+'#k='+secret;$('m-private').textContent=u;$('m-private-box').hidden=false;$('m-copy2').onclick=function(){copy(u,$('m-copied'));};}$('m-copy').onclick=function(){copy(d.link,$('m-copied'));};}function load(secret,fresh){fetch(API+'/v1/partners/me',{headers:{authorization:'Bearer '+secret},credentials:'omit',referrerPolicy:'no-referrer'}).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});}).then(function(x){if(x.ok)show(x.j,secret);}).catch(function(){});}var h=location.hash.match(/k=([A-Za-z0-9_-]{20,64})/);if(h){put(h[1]);history.replaceState(null,'',location.pathname);}var s=h?h[1]:get();if(s)load(s);$('f-code').addEventListener('input',function(){this.value=this.value.toLowerCase();$('f-prev').textContent=this.value||'yourname';});var MSG={bad_code:'Use 3 to 24 letters, digits, - or _.',code_taken:'This name is taken: try another.',bad_network:'Pick a network.',bad_address:'This does not look like an address on that network.',busy:'Too many sign-ups today: try again tomorrow.',slow_down:'Too fast: wait a minute.'};$('f').addEventListener('submit',function(e){e.preventDefault();var st=$('f-status');if(!$('f-ok').checked){st.textContent='Please agree to the rules first.';return;}st.textContent='Creating your link…';$('f-go').disabled=true;fetch(API+'/v1/partners',{method:'POST',headers:{'content-type':'application/json'},credentials:'omit',referrerPolicy:'no-referrer',body:JSON.stringify({code:$('f-code').value.trim(),coin:$('f-coin').value,network:$('f-net').value,address:$('f-addr').value.trim()})}).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});}).then(function(x){$('f-go').disabled=false;if(!x.ok){st.textContent=MSG[x.j.error]||'Something went wrong: try again.';return;}put(x.j.secret);st.textContent='';load(x.j.secret);}).catch(function(){$('f-go').disabled=false;st.textContent='No connection: try again.';});});})();</script>
 </body>
 </html>
