@@ -4,12 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-RmOCVRaYGOF27KycgXz+ZOhJiR6BC9ntyVeSGLoRF6o=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-8qM9qyNcciGzExwASlRanTWpCjTjSzNmqXurwLKaTTU=' 'sha256-M9Tyxb8uhocwtF0pYeiFKTl9oC8xJelzacBj4wFBfKA=' 'sha256-63RwPxtEL0gaQB+vUvWViTJQa3TtvzR8nLU18JvcavA=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-0JATxDk0f7K27r4p05nh+VFv+3xdWDeTzd7l+IK1jeY='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-5mZidFJDuUM2JlITrn0Z2/s27IHsQ51ozz0PKQhe9UM=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-MA/ypKass6v9Wcz7IWlpcwtKq7tlhBTM5jJJh6Qp+Cs=' 'sha256-8qM9qyNcciGzExwASlRanTWpCjTjSzNmqXurwLKaTTU=' 'sha256-CyBUPc2Q/0MpIoz1vIQDsoLjPUwkikRvUk4JrrOvz60=' 'sha256-iZptZ9GrdkqbcUSfjFTHaQffUG3aett3Y+39nn08QEQ=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-0JATxDk0f7K27r4p05nh+VFv+3xdWDeTzd7l+IK1jeY='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
 /* Shown inside another site's frame, the page hides itself, so nobody can be tricked into clicking it there. */
 /* The old address moves visitors to the new one, keeping ?s= and passing where they came from as ?ref= (for the visit counter). */
+/* Short addresses for profiles where a link cannot carry ?s= (a TikTok bio shows plain text): preflightclips.com/tt and so on. */
+if (/^\/(tt|ig|yt|li|dc|rd|x|wh|em)\/?$/.test(location.pathname)) location.replace("/?s=" + location.pathname.replace(/\//g, "") + location.hash);
 if (location.hostname === "cloudecoderl.github.io") (function(){ var u = new URL("https://preflightclips.com/" + location.search + location.hash); try { if (document.referrer && !u.searchParams.has("s")) u.searchParams.set("ref", new URL(document.referrer).hostname); } catch (e) {} location.replace(u.href); })();
 try { if (window.top !== window.self && window.top.location.origin !== window.location.origin) throw 0; } catch (e) { document.documentElement.hidden = true; }
 </script>
@@ -2252,7 +2254,10 @@ var Access = (function(){
   }
   partnerRef();
   async function startTrial(plan){
-    var ref = partnerRef(), r = await post('/v1/trial', ref ? { plan: plan, ref: ref } : { plan: plan });
+    var ref = partnerRef(), body = { plan: plan };
+    if (ref) body.ref = ref;
+    if (get('pfc.me') === '1') body.own = 1;   // one of our own browsers (marked with ?s=me): kept apart from real trials
+    var r = await post('/v1/trial', body);
     return take(r, r.data && r.data.key);
   }
   async function activate(input){
@@ -3387,7 +3392,11 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
     return /tiktok/.test(r) ? 'tiktok' : /instagram/.test(r) ? 'instagram' : /linkedin|lnkd/.test(r) ? 'linkedin' : /reddit/.test(r) ? 'reddit'
       : /(^|\.)(x|twitter)\.com$|^t\.co$/.test(r) ? 'x' : /youtube|youtu\.be/.test(r) ? 'youtube' : /google\./.test(r) ? 'google' : /discord/.test(r) ? 'discord' : /whop\.com$/.test(r) ? 'whop' : 'other';
   }
-  var SRC = source(), REF = (location.search.match(/[?&]r=([a-z0-9_-]{3,24})(?:&|$)/) || [])[1] || null;   /* a partner's link: counted for that partner */
+  /* Our own browsers: opening the site once with ?s=me marks this browser, and from then on its visits and trials are
+     counted as 'me', apart from real people. A mark in this browser only; nothing is sent about the person. */
+  var OWN = false;
+  try { if (/[?&]s=me(?:&|$)/.test(location.search)) localStorage.setItem('pfc.me', '1'); OWN = localStorage.getItem('pfc.me') === '1'; } catch (e) {}
+  var SRC = OWN ? 'me' : source(), REF = (location.search.match(/[?&]r=([a-z0-9_-]{3,24})(?:&|$)/) || [])[1] || null;   /* a partner's link: counted for that partner */
   function hit(ev){
     if (!HIT_API) return;
     try { fetch(HIT_API + '/v1/hit', { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify(REF ? { ev: ev, src: SRC, ref: REF } : { ev: ev, src: SRC }), keepalive: true, credentials: 'omit', referrerPolicy: 'no-referrer' }).catch(function(){}); } catch (e) {}
