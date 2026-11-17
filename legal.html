@@ -94,16 +94,17 @@ th{color:var(--muted);font-weight:600;border-top:0}
       <tr><td>Your orders: plan, coin, amount, our address, time, a hash of the order secret</td><td>to match your payment</td><td>unpaid orders: deleted after 30 days</td></tr>
       <tr><td>If you make an account: the user name, a salted hash of a key made from your password in your browser (never the password itself), the same for your recovery code, your plan keys encrypted in your browser so that only you can open them, when it was made and last used, the hashes of your log-in sessions, and, if the sign-up form asked for it, your e-mail address and whether you ticked the box for product news</td><td>to let you log in on any device and keep your plan; the e-mail address to confirm the account is yours and to write to you about your account or plan, and product news only if you ticked that box</td><td>until you delete the account (in the log-in window) or 2 years after the last log-in; sessions end after 90 days</td></tr>
       <tr><td>While you are making an account: the e-mail address you typed and a one-way hash of the code sent to it, never the code itself</td><td>to confirm the address</td><td>deleted when the account is made, or a day after the code runs out</td></tr>
+      <tr><td>If you ask for a trial reminder: the e-mail address you typed, tied to your trial</td><td>to write to you once, a day before the trial ends, and once when card payment is ready</td><td>deleted 30 days after the trial ends, or sooner if you ask</td></tr>
       <tr><td>Daily counts: how many visits, how many times the editor was opened, a video was added or a clip was made, and how many clicks on Try and Pay, by the site people came from (for example tiktok.com). Nothing per person</td><td>to know which ads work</td><td>about 13 months</td></tr>
       <tr><td>The id and amount of the transaction that paid an order</td><td>to make sure one payment pays one order, and for accounting</td><td>as long as tax law requires</td></tr>
     </tbody>
   </table></div>
-  <p>The server never asks for or keeps your name, card, wallet seed phrase or private key. An e-mail address is kept only with an account, as the table says. A transaction on a blockchain is public by nature: anyone can see the sending address, our address and the amount, whatever we do.</p>
+  <p>The server never asks for or keeps your name, card, wallet seed phrase or private key. An e-mail address is kept only with an account or a trial reminder you asked for, as the table says. A transaction on a blockchain is public by nature: anyone can see the sending address, our address and the amount, whatever we do.</p>
   <h3>Who else is involved</h3>
   <ul>
     <li><strong>GitHub Pages</strong> serves the site, and <strong>Cloudflare</strong> runs the plan server. Like every web host, they process your IP address to deliver the pages and to stop abuse. We do not store IP addresses.</li>
     <li>The first time you use subtitles, your browser downloads the speech library from <strong>jsDelivr</strong> and the speech model from <strong>Hugging Face</strong>. They see a download request, never your clip.</li>
-    <li><strong>Resend</strong> delivers the letter with the confirmation code when you make an account. It receives your e-mail address and that letter, nothing else.</li>
+    <li><strong>Resend</strong> delivers our letters: the confirmation code when you make an account, and the trial reminder if you asked for one. It receives your e-mail address and that letter, nothing else.</li>
     <li>To check a payment, our server asks public blockchain nodes and two exchanges (Coinbase, Kraken, for prices) about public data. It never sends them anything about you.</li>
     <li>If you e-mail us, we keep the message to answer it and delete it within a year after the matter is closed.</li>
   </ul>
