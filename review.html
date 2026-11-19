@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-QhJiu3Tj+hHsaLG1DCkgmSXNbNriG48HplmSGBj3LEg=' 'sha256-Ieo6/Acgp0B7CTNCv4LUM18/LESXj5M9nSQLrF4/tb4=' 'sha256-ezE09nJV+bN0yIYUEQ21AqHA3vF8Cn2C+i1XWsBpIT4='; style-src 'sha256-LbeHnBdopNtrUHe2ly+t2fdJwqHHa+ymwA56w69iLns='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-QhJiu3Tj+hHsaLG1DCkgmSXNbNriG48HplmSGBj3LEg=' 'sha256-Ieo6/Acgp0B7CTNCv4LUM18/LESXj5M9nSQLrF4/tb4=' 'sha256-sl4xRxuKqS7suJKooqItHYP40tkyCDdcNmP+Vk+fgsc='; style-src 'sha256-LbeHnBdopNtrUHe2ly+t2fdJwqHHa+ymwA56w69iLns='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Free clip review — PreflightClips</title>
 <script>
@@ -780,11 +780,12 @@ var barsOf = (function(){
         if (!AC) return res(null);
         var ac = new AC(), done = function(v){ try { ac.close(); } catch (e) {} res(v); };
         try {
-          ac.decodeAudioData(buf, function(ab){
+          var pr = ac.decodeAudioData(buf, function(ab){
             var peak = 0;
             for (var c = 0; c < ab.numberOfChannels; c++){ var d = ab.getChannelData(c); for (var k = 0; k < d.length; k += 5){ var v = Math.abs(d[k]); if (v > peak) peak = v; } }
             done(peak < 0.003 ? 'none' : 'ok');
           }, function(){ done(null); });
+          if (pr && pr.catch) pr.catch(function(){});   // newer browsers also return a promise: its rejection is handled above
         } catch (e) { done(null); }
       }).catch(function(){ res(null); });
     });
