@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-Xza24e9ExwphFZFSGRmKUMXU3TaC8Lo58rjnKRx4g70=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-EywRG0HgLZvQ6K0/O6/NcK0fYL44ZRqbiUyRlr6tkJE=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-8NOHPe2RlSOIKfBn3ImWSFWM6FQ3IuzOWJv9CtvNdfE=' 'sha256-oFkoSxiE6ZJ4kmOm2JFulvv1GGs7UK2vq5tl0DuJ3PY=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-VcPJnKmsCpNy1P95ep7jlQYxE8LC/NIDfsbSLX8dEF0='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-Xza24e9ExwphFZFSGRmKUMXU3TaC8Lo58rjnKRx4g70=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-EywRG0HgLZvQ6K0/O6/NcK0fYL44ZRqbiUyRlr6tkJE=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-8NOHPe2RlSOIKfBn3ImWSFWM6FQ3IuzOWJv9CtvNdfE=' 'sha256-c2CA/D/VEVQxUw+u9T1+zkrF5ex/3XECaVSj4KWAwfM=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-mSNZjrMJiCZifczFBWdHI0mSQFNxYDySeKD/4iAfyx0='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
@@ -851,6 +851,18 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
   #panel-team .rtable tr.flag{box-shadow:inset 3px 0 0 var(--stop,#FF453A)}
 }
 @container (max-width:420px){ .demo .seg button{padding:6px 10px;font-size:13px} .demo .dph{width:min(100%,180px)} }
+
+/* ---- sign-up first (21.11.2026): signed out, the tools are replaced by one card ---- */
+body.gated #work,body.gated #side{display:none !important}
+.gate{display:flex;justify-content:center;padding:8px 16px 48px}
+.gate-card{display:flex;flex-direction:column;align-items:flex-start;gap:14px;width:100%;max-width:560px;padding:32px;border-radius:28px}
+.gate-ic{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:rgba(10,132,255,.18);color:#4BA6FF} .gate-ic svg{width:28px;height:28px}
+.gate-card h2{font-size:28px;line-height:1.15;letter-spacing:-.02em;font-weight:700;margin:0}
+.gate-p{color:var(--muted);font-size:16px;line-height:1.5;margin:0;max-width:48ch}
+.gate-list{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.gate-list li{display:flex;gap:10px;align-items:flex-start} .gate-list li::before{content:"";flex:none;width:8px;height:8px;margin-top:7px;border-radius:50%;background:#30D158}
+.gate-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px} .gate-cta .btn{padding:14px 22px;font-size:16px}
+@media (max-width:560px){ .gate-card{padding:24px} .gate-card h2{font-size:24px} }
 </style>
 </head>
 <body>
@@ -873,7 +885,7 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
     <select id="lang" class="lang" aria-label="Language" data-keep></select>
     <button type="button" id="plan-pill" class="planpill" hidden></button>
     <button type="button" id="acct-btn" class="planpill acctbtn" hidden>Log in</button>
-    <small>Free. No sign-up. Nothing leaves your device.</small>
+    <small>Free account. Nothing leaves your device.</small>
   </header>
 
   <div class="mk" hidden>
@@ -913,6 +925,20 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
   </section>
 
   </div>
+
+  <section class="gate" id="gate" hidden aria-labelledby="gate-h">
+    <div class="gate-card glass">
+      <span class="gate-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg></span>
+      <h2 id="gate-h">Create your free account to start</h2>
+      <p class="gate-p">One account for every tool: the caption check, the clip review, subtitles, cutting and your saved clips. It takes a minute.</p>
+      <ul class="gate-list">
+        <li>Free plan: caption and file checks for every campaign</li>
+        <li>Pro and Team: 3 free days, no card</li>
+        <li>Your clips stay on your device. Nothing is uploaded.</li>
+      </ul>
+      <div class="gate-cta"><button type="button" class="btn primary" data-gate="signup">Create a free account</button><button type="button" class="btn" data-gate="login">Log in</button></div>
+    </div>
+  </section>
 
   <main class="work" id="work">
     <div class="inputs">
@@ -4785,7 +4811,7 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
     box.textContent = '';
     box.appendChild(node('h3', null, need === 'team' ? 'This tool is part of Team' : 'This tool is part of Pro'));
     box.appendChild(node('p', 'hint', LOCK_TEXT[feature]));
-    box.appendChild(node('p', 'hint', tryIt ? Number(planInfo(need).trial_days) + ' days free, then ' + price(need) + ' for 30 days. No card, no sign-up.' : price(need) + ' for 30 days.'));
+    box.appendChild(node('p', 'hint', tryIt ? Number(planInfo(need).trial_days) + ' days free, then ' + price(need) + ' for 30 days. No card.' : price(need) + ' for 30 days.'));
     if (tryIt) row.appendChild(tryButton(need, st));
     row.appendChild(button('btn' + (tryIt ? '' : ' primary'), 'See the plans', showPricing));
     row.appendChild(st); box.appendChild(row);
@@ -5179,6 +5205,27 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
   Account.onchange(acctRender);
   Access.onchange(function(){ gate(); renderAccount(); renderPlans(); if (Access.state().plan !== 'free') el('key-status').textContent = ''; });
   var accessReady = Access.init(ACC);          /* enabled() is already right; the stored plan arrives a moment later */
+  /* ---- Sign-up first: with accounts on, the tools open only after logging in. A checklist link an agency sends its
+     clippers (#b=… or ?c=…) still opens without an account, so a team's clippers are not stopped at the door. ---- */
+  var VIA_LINK = /(^#|&)b=/.test(location.hash) || /[?&]c=/.test(location.search);
+  function gate(){
+    var need = Access.enabled() && !Account.name() && !VIA_LINK;
+    document.body.classList.toggle('gated', need); el('gate').hidden = !need;
+  }
+  function gateOpen(view){ acctOpen(); if (!Account.name()) acctView(view === 'login' ? 'login' : 'signup'); }
+  [].forEach.call(document.querySelectorAll('[data-gate]'), function(b){ b.addEventListener('click', function(){ gateOpen(b.getAttribute('data-gate')); }); });
+  Account.onchange(function(){ gate(); acctRender(); });
+  /* while signed out, the page's other ways into a tool (tiles, "try it" buttons) lead to sign-up instead */
+  document.addEventListener('click', function(e){
+    if (!document.body.classList.contains('gated')) return;
+    var t = e.target.closest && e.target.closest('#hero-try,[data-tab],[data-go],[data-go-tab],.tabs [role="tab"],#vhero-pick,.ratecards a,.ratecards button');
+    if (!t) return;
+    e.preventDefault(); e.stopPropagation(); gateOpen('signup');
+  }, true);
+  gate();
+  /* /app.html#signup and #login open the account window (the home page and the clip review link here) */
+  function acctFromHash(){ var m = /^#(signup|login)$/.exec(location.hash); if (m && !Account.name()) gateOpen(m[1]); }
+  acctFromHash(); window.addEventListener('hashchange', acctFromHash);
   gate(); renderAccount(); renderPlans();
   accessReady.then(function(on){
     if (!on) return;

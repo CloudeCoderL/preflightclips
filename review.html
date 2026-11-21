@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-opWGeAA+0+5PT5+UOWQOodr+YHnwhl1wGaR31kO6MYo=' 'sha256-t+W/MQ9ymTh6JnXQsmBr9ofLVGHcYkFou8tgJws1j9M='; style-src 'sha256-iGsZPc25QrAH0X/coGB5fEKpS9rPcJaeeyFwJguc3D4='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-afjO7W6mIpMlr4daw5XOSwRAJ9ceZ6ZzSdvQUavS2sQ=' 'sha256-t+W/MQ9ymTh6JnXQsmBr9ofLVGHcYkFou8tgJws1j9M='; style-src 'sha256-iGsZPc25QrAH0X/coGB5fEKpS9rPcJaeeyFwJguc3D4='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Free clip review — PreflightClips</title>
 <script>
@@ -331,12 +331,12 @@ footer p{margin:18px 0 0;max-width:90ch}
 
 <main class="wrap">
   <section class="rv-hero" aria-labelledby="h1">
-    <span class="kicker glass"><b>Free</b> No sign-up</span>
+    <span class="kicker glass"><b>Free</b> With a free account</span>
     <h1 id="h1">Free clip review</h1>
     <p class="lede">Drop your clip and get a quick review in seconds: frame shape, black bars, how big the picture is, the first second, sound, and what TikTok's buttons will cover. The file never leaves your device.</p>
     <label class="rv-drop glass" id="rv-drop"><input type="file" id="rv-file" accept="video/*,.mp4,.mov,.webm" aria-label="Choose a clip">
       <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg></span>
-      <b>Choose a clip</b><span>or drop it here. MP4 or MOV</span></label>
+      <b>Choose a clip</b><span>or drop it here. MP4 or MOV. Free account</span></label>
     <p class="note" id="rv-status" aria-live="polite"></p>
   </section>
 
@@ -842,8 +842,19 @@ var ReviewUI = function(hit){
     hit('review');
   }
 
+  /* sign-up first (21.11.2026): the review runs for a logged-in account (the editor keeps it in this browser) */
+  function signedIn(){ try { var a = JSON.parse(localStorage.getItem('pfc.acct') || 'null'); return !!(a && a.name); } catch (e) { return false; } }
+  function askAccount(){
+    st.textContent = 'Create a free account to check your clip. It takes a minute. ';
+    var a = document.createElement('a'); a.href = '/app.html#signup'; a.textContent = 'Create a free account'; st.appendChild(a);
+    st.appendChild(document.createTextNode(' or '));
+    var b = document.createElement('a'); b.href = '/app.html#login'; b.textContent = 'log in'; st.appendChild(b);
+    st.appendChild(document.createTextNode('.'));
+  }
+  input.addEventListener('click', function(e){ if (!signedIn()){ e.preventDefault(); askAccount(); } });
   function run(file){
     if (!file || busy) return;
+    if (!signedIn()){ askAccount(); return; }
     if (!/^video\//.test(file.type) && !/\.(mp4|mov|m4v|webm)$/i.test(file.name)){ st.textContent = 'This file could not be read. Try an MP4.'; return; }
     busy = true; out.hidden = true; st.textContent = 'Reading ' + file.name + '…';
     if (lastUrl) URL.revokeObjectURL(lastUrl);
