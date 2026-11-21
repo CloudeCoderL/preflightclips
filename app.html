@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-Xza24e9ExwphFZFSGRmKUMXU3TaC8Lo58rjnKRx4g70=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-EywRG0HgLZvQ6K0/O6/NcK0fYL44ZRqbiUyRlr6tkJE=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-8NOHPe2RlSOIKfBn3ImWSFWM6FQ3IuzOWJv9CtvNdfE=' 'sha256-c2CA/D/VEVQxUw+u9T1+zkrF5ex/3XECaVSj4KWAwfM=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-mSNZjrMJiCZifczFBWdHI0mSQFNxYDySeKD/4iAfyx0='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%2326272B%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-Xza24e9ExwphFZFSGRmKUMXU3TaC8Lo58rjnKRx4g70=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-EywRG0HgLZvQ6K0/O6/NcK0fYL44ZRqbiUyRlr6tkJE=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-8NOHPe2RlSOIKfBn3ImWSFWM6FQ3IuzOWJv9CtvNdfE=' 'sha256-c2CA/D/VEVQxUw+u9T1+zkrF5ex/3XECaVSj4KWAwfM=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-Fs/IhmFcovc3tfkp9Wq57kMHcYfx7M2W9f1LU+XX5YU='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
@@ -863,6 +863,17 @@ body.gated #work,body.gated #side{display:none !important}
 .gate-list li{display:flex;gap:10px;align-items:flex-start} .gate-list li::before{content:"";flex:none;width:8px;height:8px;margin-top:7px;border-radius:50%;background:#30D158}
 .gate-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px} .gate-cta .btn{padding:14px 22px;font-size:16px}
 @media (max-width:560px){ .gate-card{padding:24px} .gate-card h2{font-size:24px} }
+
+/* ---- brand colours (21.11.2026): matte dark grey and white instead of blue. Status colours (green, red, yellow) stay:
+   they mean something. The Neon subtitle style and the blue swatch keep their blue: they are what the clip gets. ---- */
+:root{--accent:#E6E7EB; --accent-hi:#FFFFFF; --orb-a:rgba(255,255,255,.07); --orb-b:rgba(255,255,255,.04); --orb-c:rgba(255,255,255,.03); --orb-d:rgba(255,255,255,.02)}
+.brand i,.tiles .fi,.steps h3::before,.ba-arrow{background:linear-gradient(180deg,#3A3B40,#232428) !important;color:#fff !important;
+  border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 18px -10px rgba(0,0,0,.8) !important}
+.btn.primary::after{background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%)}
+.vhero{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02))}
+.demo-strip{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02))}
+.demo-strip .ds-ic,.gate-ic{background:rgba(255,255,255,.08);color:#F5F6F8}
+.vbar i{box-shadow:none}
 </style>
 </head>
 <body>
