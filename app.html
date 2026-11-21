@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-Xza24e9ExwphFZFSGRmKUMXU3TaC8Lo58rjnKRx4g70=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-EywRG0HgLZvQ6K0/O6/NcK0fYL44ZRqbiUyRlr6tkJE=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-8NOHPe2RlSOIKfBn3ImWSFWM6FQ3IuzOWJv9CtvNdfE=' 'sha256-OXieiWMoG2e/10hJp4voWubzxdwOdBfu/ZxcX4WtUj8=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-E4TCvVQhWeSDvPQ7+iV0QwYXfDQf/Bum3kBEasMN7Vw='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-Xza24e9ExwphFZFSGRmKUMXU3TaC8Lo58rjnKRx4g70=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-EywRG0HgLZvQ6K0/O6/NcK0fYL44ZRqbiUyRlr6tkJE=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-8NOHPe2RlSOIKfBn3ImWSFWM6FQ3IuzOWJv9CtvNdfE=' 'sha256-LBPkfI8JxyShi0p/ADp9HnubBI8OalbpvSXL9wZIlBQ=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-653sxtNEZ5+4VWDdyOCbSlI3gJDAGWedpVywQUOQrzE='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
@@ -782,6 +782,54 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
 .remind .rm-row{display:flex;gap:8px} .remind .rm-row input{flex:1;min-width:0} .remind .rm-row .btn{white-space:nowrap}
 .remind .rm-x{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:var(--muted);cursor:pointer;font:inherit;line-height:1}
 @media (max-width:899px){ .remind{right:12px;left:12px;width:auto;bottom:calc(132px + env(safe-area-inset-bottom))} }
+
+/* ---- tool demos: a sample clip on each empty tool tab (Video, Subtitles, Cut clips), 21.11.2026 ---- */
+.demo{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:22px;align-items:start;width:100%;margin-top:14px;padding:16px;border-radius:var(--r-card);border:1px solid var(--edge);background:rgba(255,255,255,.035)}
+.need .demo{margin-top:0}
+@media (max-width:620px){ .demo{grid-template-columns:minmax(0,1fr)} .demo .dph{width:min(100%,220px);margin:0 auto} }
+.dph{position:relative;aspect-ratio:9/16;border-radius:22px;overflow:hidden;background:#000;border:1px solid var(--edge);isolation:isolate}
+.dph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:filter .35s}
+.dph video.zoom{animation:dm-zoom 2.6s ease-in-out infinite}
+@keyframes dm-zoom{0%,55%{transform:scale(1)}62%,88%{transform:scale(1.2)}100%{transform:scale(1)}}
+.dph video.f-vivid{filter:saturate(1.55) contrast(1.12)} .dph video.f-warm{filter:sepia(.28) saturate(1.3) hue-rotate(-8deg)}
+.dph video.f-cool{filter:saturate(1.1) hue-rotate(14deg) brightness(1.03)} .dph video.f-bw{filter:grayscale(1) contrast(1.12)}
+.dph video.f-vintage{filter:sepia(.5) saturate(.8) contrast(.94) brightness(1.04)} .dph video.f-moody{filter:saturate(.65) brightness(.82) contrast(1.18)}
+.dm-tag{position:absolute;left:10px;top:10px;z-index:3;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:650;color:#fff;background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
+.dm-head{position:absolute;left:8%;right:8%;top:17%;z-index:2;padding:6px 8px;border-radius:8px;text-align:center;font-weight:850;font-size:14px;line-height:1.15;color:#000;background:#fff}
+.dm-zones i{position:absolute;z-index:2;background:rgba(255,69,58,.34);outline:2px dashed rgba(255,120,110,.9);outline-offset:-3px}
+.dm-zones .z-top{left:0;right:0;top:0;height:8.3%} .dm-zones .z-right{right:0;width:13.9%;top:42.7%;height:34.4%} .dm-zones .z-bottom{left:0;right:0;bottom:0;height:22.9%}
+.dm-side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.dm-side .label{margin-top:4px}
+.dm-k{color:var(--muted);font-size:15px;line-height:1.45;max-width:48ch}
+.seg.wrap button{padding:7px 13px;font-size:14px}
+.dm-cc{position:absolute;left:7%;right:7%;top:63%;z-index:2;text-align:center;font-weight:850;font-size:17px;line-height:1.2;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000,0 2px 5px #000}
+.dm-cc.p-high{top:14%} .dm-cc.p-mid{top:43%}
+.dm-cc span{display:inline-block;margin:0 .1em;transition:transform .12s,color .12s,background-color .12s}
+.dm-cc.box span{background:rgba(0,0,0,.74);padding:.04em .22em;margin:0;border-radius:4px;text-shadow:none}
+.dm-cc.yellow{color:#FFD60A;text-transform:uppercase}
+.dm-cc.karaoke span.on{color:#FFD60A}
+.dm-cc.highlight{text-transform:uppercase} .dm-cc.highlight span.on{background:#30D158;border-radius:6px;padding:0 .18em;text-shadow:none}
+.dm-cc.one span{display:none} .dm-cc.one span.on{display:inline-block;font-size:1.7em}
+.dm-cc.pop span.on{color:#FFD60A;transform:scale(1.28)}
+.dm-cc.neon{text-shadow:0 0 8px #0A84FF,0 0 18px #0A84FF,0 0 2px #000}
+.dm-cc.comic{color:#FFD60A;text-transform:uppercase;transform:rotate(-3deg);text-shadow:3px 3px 0 #000,-3px -3px 0 #000,3px -3px 0 #000,-3px 3px 0 #000}
+.dm-cc.typewriter span:not(.on):not(.past){visibility:hidden}
+.dm-cc.gradient{text-transform:uppercase;color:#FFD60A;text-shadow:0 0 3px #000,0 2px 0 #FF453A}
+.dm-cc.shadow{text-transform:uppercase;text-shadow:3px 4px 0 #000} .dm-cc.shadow span.on{color:#FFD60A}
+.dm-tl{display:flex;align-items:flex-end;gap:2px;height:56px;padding:6px 8px;border-radius:12px;background:var(--field);border:1px solid var(--field-edge)}
+.dm-tl i{flex:1;min-width:1px;border-radius:2px;background:rgba(255,255,255,.22)}
+.dm-tl i.hit{background:#FFD60A} .dm-tl i.sel{background:#30D158}
+.dm-moments{display:flex;flex-direction:column;gap:6px}
+.dm-moments button{display:flex;gap:10px;align-items:center;text-align:left;padding:9px 12px;border-radius:12px;border:1px solid var(--field-edge);background:var(--field);color:var(--muted);font-size:14px;cursor:pointer}
+.dm-moments button b{display:grid;place-items:center;width:24px;height:24px;border-radius:8px;background:rgba(255,214,10,.18);color:#FFD60A;font-size:13px}
+.dm-moments button[aria-pressed="true"]{color:var(--ink);border-color:rgba(48,209,88,.6)} .dm-moments button[aria-pressed="true"] b{background:rgba(48,209,88,.2);color:#30D158}
+@media (prefers-reduced-motion:reduce){ .dph video.zoom{animation:none;transform:scale(1.12)} }
+.dm-tl i.h1{height:10%}.dm-tl i.h2{height:20%}.dm-tl i.h3{height:30%}.dm-tl i.h4{height:40%}.dm-tl i.h5{height:50%}
+.dm-tl i.h6{height:60%}.dm-tl i.h7{height:70%}.dm-tl i.h8{height:80%}.dm-tl i.h9{height:90%}.dm-tl i.h10{height:100%}
+/* the demos sit in the editor's narrow left column: stack them there, keep the chips in rows */
+.need,.vhero{container-type:inline-size}
+@container (max-width:560px){ .demo{grid-template-columns:minmax(0,1fr)} .demo .dph{width:min(100%,210px);margin:0 auto} }
+.demo .seg{display:flex;flex-wrap:wrap;border-radius:18px} .demo .seg button{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -906,6 +954,16 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
         <h2>Add your clip</h2>
         <p>Auto-edit puts on captions, zoom and music with one tap. The video stays on your device.</p>
         <button type="button" class="btn primary" id="vhero-pick">Choose a video</button>
+        <div class="demo" id="dm-video">
+          <div class="dph"><video muted loop playsinline preload="none" poster="media/talking.jpg" data-src="media/talking.mp4"></video><div class="dm-head" id="dmv-head" hidden>he did NOT see it coming</div><div class="dm-zones" id="dmv-zones" hidden><i class="z-top"></i><i class="z-right"></i><i class="z-bottom"></i></div><span class="dm-tag">Sample clip</span></div>
+          <div class="dm-side">
+            <p class="dm-k">See what each effect does on a sample clip, then add your own.</p>
+            <span class="label">Colour</span>
+            <div class="seg wrap" id="dmv-filter" role="group" aria-label="Colour look on the sample clip"><button type="button" data-f="" aria-pressed="true">Natural</button><button type="button" data-f="vivid" aria-pressed="false">Vivid</button><button type="button" data-f="warm" aria-pressed="false">Warm</button><button type="button" data-f="cool" aria-pressed="false">Cool</button><button type="button" data-f="bw" aria-pressed="false">Black and white</button><button type="button" data-f="vintage" aria-pressed="false">Vintage</button><button type="button" data-f="moody" aria-pressed="false">Moody</button></div>
+            <span class="label">Effects</span>
+            <div class="seg wrap" id="dmv-fx" role="group" aria-label="Effects on the sample clip"><button type="button" data-x="zoom" aria-pressed="false">Zoom on loud moments</button><button type="button" data-x="speed" aria-pressed="false">1.25× speed</button><button type="button" data-x="head" aria-pressed="false">Text on screen</button><button type="button" data-x="zones" aria-pressed="false">What TikTok covers</button></div>
+          </div>
+        </div>
       </div>
       <div class="field" data-free>
         <label for="video">Video file</label>
@@ -1002,7 +1060,19 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
 
       <div class="panel" id="panel-subs" role="tabpanel" aria-labelledby="tab-subs" hidden>
         <div id="lock-subs" class="lock" hidden></div>
-        <div id="s-need" class="need"><p class="hint">Subtitles are written from the speech in your clip. Add the clip first.</p><button type="button" class="btn" data-go="video">Add a clip</button></div>
+        <div id="s-need" class="need" data-free>
+          <div class="demo" id="dm-subs">
+            <div class="dph"><video muted loop playsinline preload="none" poster="media/podcast.jpg" data-src="media/podcast.mp4"></video><div class="dm-cc karaoke p-low" id="dms-cc" data-keep></div><span class="dm-tag">Sample clip</span></div>
+            <div class="dm-side">
+              <p class="dm-k">Pick a style and see it on a sample clip. On yours, the words come from the speech.</p>
+              <span class="label">Style</span>
+              <div class="seg wrap" id="dms-look" role="group" aria-label="Subtitle style on the sample clip"><button type="button" data-look="outline" aria-pressed="false">White, outlined</button><button type="button" data-look="box" aria-pressed="false">On a dark plate</button><button type="button" data-look="yellow" aria-pressed="false">Color capitals</button><button type="button" data-look="karaoke" aria-pressed="true">Karaoke</button><button type="button" data-look="highlight" aria-pressed="false">Highlight the word</button><button type="button" data-look="one" aria-pressed="false">One word at a time</button><button type="button" data-look="pop" aria-pressed="false">Pop</button><button type="button" data-look="neon" aria-pressed="false">Neon</button><button type="button" data-look="comic" aria-pressed="false">Comic</button><button type="button" data-look="typewriter" aria-pressed="false">Typewriter</button><button type="button" data-look="gradient" aria-pressed="false">Gradient</button><button type="button" data-look="shadow" aria-pressed="false">Hard shadow</button></div>
+              <span class="label">Position</span>
+              <div class="seg" id="dms-pos" role="group" aria-label="Subtitle position on the sample clip"><button type="button" data-pos="high" aria-pressed="false">Top</button><button type="button" data-pos="mid" aria-pressed="false">Middle</button><button type="button" data-pos="low" aria-pressed="true">Bottom</button></div>
+            </div>
+          </div>
+          <p class="hint">Subtitles are written from the speech in your clip. Add the clip to try them on it.</p><button type="button" class="btn primary" data-go="video">Add your clip</button>
+        </div>
         <div id="s-box" class="vtools" hidden>
           <div class="field">
             <label for="s-lang">Language spoken in the clip</label>
@@ -1030,7 +1100,18 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
 
       <div class="panel" id="panel-clips" role="tabpanel" aria-labelledby="tab-clips" hidden>
         <div id="lock-clips" class="lock" hidden></div>
-        <div id="c-need" class="need"><p class="hint">Cut one long video into several clips. Add the video first.</p><button type="button" class="btn" data-go="video">Add a video</button></div>
+        <div id="c-need" class="need" data-free>
+          <div class="demo" id="dm-clips">
+            <div class="dph"><video muted loop playsinline preload="none" poster="media/headset.jpg" data-src="media/headset.mp4"></video><span class="dm-tag" id="dmc-tag">Moment 1</span></div>
+            <div class="dm-side">
+              <p class="dm-k">Example: a 40-minute stream. The page listens to it and marks the moments worth a clip: loud parts, laughs, a strong start.</p>
+              <div class="dm-tl" id="dmc-tl" aria-hidden="true"></div>
+              <div class="dm-moments" id="dmc-list" role="group" aria-label="Moments found in the sample stream"><button type="button" data-m="0" aria-pressed="true"><b>1</b> 12:40, a big reaction</button><button type="button" data-m="1" aria-pressed="false"><b>2</b> 27:05, the win</button><button type="button" data-m="2" aria-pressed="false"><b>3</b> 34:50, a calm explainer</button></div>
+              <p class="hint">Each moment becomes its own 9:16 clip with your frame, text and subtitles.</p>
+            </div>
+          </div>
+          <p class="hint">Cut one long video into several clips. Add the video to try it on yours.</p><button type="button" class="btn primary" data-go="video">Add your video</button>
+        </div>
         <div id="c-box" class="vtools" hidden>
           <div class="field">
             <span class="label">How to cut</span>
@@ -5076,6 +5157,88 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
       showPricing(); setTimeout(function(){ el('key-in').focus(); }, 600);
     }
   });
+  /* ---- tool demos: before a clip is added, each video tool shows what it does on a sample clip (stock footage in
+     media/). A sample plays only while it is on screen; the effects are CSS on the <video>, an approximation of the
+     editor's real output. ---- */
+  (function(){
+    function pressOne(group, btn){ [].forEach.call(group.querySelectorAll('button'), function(b){ b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); }); }
+    var vids = [].slice.call(document.querySelectorAll('.dph video'));
+    function wake(v){ if (!v.getAttribute('src')) v.src = v.getAttribute('data-src'); if (v.paused){ var p = v.play(); if (p && p.catch) p.catch(function(){}); } }
+    /* a plain check once a second (tabs and locks show and hide these without scrolling, which an observer can miss) */
+    function tick(){
+      vids.forEach(function(v){
+        var r = v.getBoundingClientRect(), seen = !document.hidden && v.offsetParent && r.height > 0 && r.bottom > 0 && r.top < innerHeight;
+        if (seen) wake(v); else if (!v.paused) v.pause();
+      });
+    }
+    tick(); setInterval(tick, 1000);
+
+    /* Video: colour looks and effects */
+    var dv = document.querySelector('#dm-video video');
+    if (dv){
+      el('dmv-filter').addEventListener('click', function(e){
+        var b = e.target.closest('button'); if (!b) return; pressOne(el('dmv-filter'), b);
+        dv.className = dv.className.replace(/\bf-\w+/g, '').trim();
+        if (b.getAttribute('data-f')) dv.classList.add('f-' + b.getAttribute('data-f'));
+      });
+      el('dmv-fx').addEventListener('click', function(e){
+        var b = e.target.closest('button'); if (!b) return;
+        var on = b.getAttribute('aria-pressed') !== 'true', x = b.getAttribute('data-x');
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (x === 'zoom') dv.classList.toggle('zoom', on);
+        else if (x === 'speed') dv.playbackRate = on ? 1.25 : 1;
+        else if (x === 'head') el('dmv-head').hidden = !on;
+        else if (x === 'zones') el('dmv-zones').hidden = !on;
+      });
+    }
+
+    /* Subtitles: words run over the sample in the chosen style, four at a time */
+    var cc = el('dms-cc');
+    if (cc){
+      var WORDS = 'nobody saw that coming and the whole chat went crazy right after'.split(' '), at = 0;
+      function line(){
+        var start = Math.floor(at / 4) * 4;
+        cc.textContent = '';
+        WORDS.slice(start, start + 4).forEach(function(w, i){
+          var s = document.createElement('span'); s.textContent = w;
+          if (start + i === at) s.className = 'on'; else if (start + i < at) s.className = 'past';
+          cc.appendChild(s);
+        });
+        at = (at + 1) % WORDS.length;
+      }
+      line(); setInterval(function(){ if (!document.hidden && cc.offsetParent) line(); }, 420);
+      function cls(){ var look = el('dms-look').querySelector('[aria-pressed="true"]'), pos = el('dms-pos').querySelector('[aria-pressed="true"]');
+        cc.className = 'dm-cc ' + (look ? look.getAttribute('data-look') : 'karaoke') + ' p-' + (pos ? pos.getAttribute('data-pos') : 'low'); }
+      ['dms-look', 'dms-pos'].forEach(function(id){ el(id).addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; pressOne(el(id), b); cls(); }); });
+    }
+
+    /* Cut clips: a sample stream's loudness, with the three moments it would cut */
+    var tl = el('dmc-tl');
+    if (tl){
+      var N = 60, MOM = [[17, 21], [38, 42], [49, 53]], CLIPS = ['headset', 'celebrate', 'editing'], seed = 7, bars = [];
+      for (var k = 0; k < N; k++){
+        seed = (seed * 9301 + 49297) % 233280;
+        var hot = MOM.some(function(m){ return k >= m[0] && k < m[1]; });
+        var b = document.createElement('i'), h = hot ? 70 + (seed % 30) : 12 + (seed % 38);
+        b.setAttribute('data-h', h); bars.push(b); tl.appendChild(b);
+      }
+      /* bar heights without a style attribute (the page's policy forbids those): one class per 10% step */
+      bars.forEach(function(b){ b.className = 'h' + Math.round(b.getAttribute('data-h') / 10); });
+      function pick(n){
+        bars.forEach(function(b, k){
+          var m = MOM.findIndex(function(r){ return k >= r[0] && k < r[1]; });
+          b.classList.toggle('hit', m >= 0 && m !== n); b.classList.toggle('sel', m === n);
+        });
+        var v = document.querySelector('#dm-clips video'), name = CLIPS[n];
+        v.poster = 'media/' + name + '.jpg'; v.setAttribute('data-src', 'media/' + name + '.mp4');
+        if (v.getAttribute('src')){ v.src = 'media/' + name + '.mp4'; var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+        el('dmc-tag').textContent = 'Moment ' + (n + 1);
+      }
+      el('dmc-list').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; pressOne(el('dmc-list'), b); pick(+b.getAttribute('data-m')); });
+      pick(0);
+    }
+  })();
+
   /* a link from the home page's menu opens one tool: /app.html#tool=subs */
   function toolFromHash(){ var m = /^#tool=([a-z]+)$/.exec(location.hash); if (m && TABS.indexOf(m[1]) >= 0) setTab(m[1], false, true); }
   toolFromHash(); window.addEventListener('hashchange', toolFromHash);
