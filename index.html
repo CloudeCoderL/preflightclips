@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-opWGeAA+0+5PT5+UOWQOodr+YHnwhl1wGaR31kO6MYo=' 'sha256-WWIRk3/ITAb4LLQrv2kQNRk4ZAEb3vco5ILS6Nm/h3U='; style-src 'sha256-BfrP1sJKhpXvrm+btejGmKFPd0FrNH7R6bVY0LHCi9U='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-opWGeAA+0+5PT5+UOWQOodr+YHnwhl1wGaR31kO6MYo=' 'sha256-WWIRk3/ITAb4LLQrv2kQNRk4ZAEb3vco5ILS6Nm/h3U='; style-src 'sha256-XqZuJWFP+t3ad/BNcYaS/C2o6WD09/K1p3+I0BJp6K4='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — the clip editor that knows the brief</title>
 <script>
@@ -114,6 +114,8 @@ a{color:inherit}
 .mob summary::after{content:"+";float:right;color:var(--muted)} .mob details[open] summary::after{content:"–"}
 .mob-l{display:block;padding:12px 8px;font-weight:650;text-decoration:none;border-bottom:1px solid var(--edge)}
 .cta.left{justify-content:flex-start;margin-top:28px}
+.biz-brief{margin:28px 0 0;font-size:17px;color:var(--ink,#f5f6f8);max-width:62ch}
+.biz-brief + .cta.left{margin-top:16px}
 @media (max-width:1100px){ .mm-p.wide{left:-80px} .mm-grid.g3{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:960px){ .nav,.bar .lang,.bar .key{display:none} .burger{display:flex} }
 @media (min-width:961px){ .mob{display:none!important} }
@@ -468,14 +470,15 @@ footer p{margin:18px 0 0;max-width:90ch}
   </section>
 
   <section id="business" class="sec" aria-labelledby="b-h">
-    <div class="sec-h"><p class="eyebrow">For business</p><h2 id="b-h">Run clipping at scale.</h2><p>For clipping agencies and brands with campaigns: one checklist for every clipper, and a table that catches late and repeated posts.</p></div>
+    <div class="sec-h"><p class="eyebrow">For business</p><h2 id="b-h">Fewer clips for your team to reject.</h2><p>Your reviewers check every clip by hand. Turn the campaign brief into a checklist link each clipper runs before submitting, so a missing tag, a wrong hashtag or text under TikTok's caption gets fixed before it reaches you.</p></div>
     <ul class="grid">
       <li class="glass"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span><h3>One checklist link</h3><p>Your brief turned into a checklist. Every clipper opens the same link.</p></li>
       <li class="glass"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.2-5.2 6.5-5.2s5.8 1.8 6.5 5.2M16 4.5a3.5 3.5 0 010 7M19 14.8c1.4.8 2.2 2.4 2.5 5.2"/></svg></span><h3>Review table</h3><p>Paste the post links: who posted when, repeats and late ones.</p></li>
       <li class="glass"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Fewer rejected clips</h3><p>Clippers fix the caption and the file before the post goes up.</p></li>
       <li class="glass"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg></span><h3>5 devices on one plan</h3><p>$49 for 30 days, 3 free days to try, no card.</p></li>
     </ul>
-    <div class="cta left"><a class="btn main" href="/app.html#tool=team">Try Team free for 3 days</a><a class="btn" href="mailto:preflightclips@gmail.com?subject=PreflightClips%20for%20our%20team">Talk to us</a></div>
+    <p class="biz-brief">Send us the brief of one live campaign and we set up its checklist link for you, free. You only forward it to your clippers.</p>
+    <div class="cta left"><a class="btn main" href="mailto:preflightclips@gmail.com?subject=Our%20campaign%20brief&amp;body=Campaign%20name%3A%0AWhere%20it%20runs%20(TikTok%2C%20Reels%2C%20Shorts)%3A%0AThe%20brief%20or%20a%20link%20to%20it%3A%0A">Send us a brief</a><a class="btn" href="/app.html#tool=team">Try Team free for 3 days</a></div>
   </section>
 
   <section id="pricing" class="sec" aria-labelledby="p-h">
