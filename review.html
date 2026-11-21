@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-suX/iGlKVZbe+W/EG2VwjlPhmJqhsDZIcRtuweziELQ=' 'sha256-t+W/MQ9ymTh6JnXQsmBr9ofLVGHcYkFou8tgJws1j9M='; style-src 'sha256-TLMbA1b7vssUDTEpYK73+J6pSv43PSDopxa6rKCzhY0='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-opWGeAA+0+5PT5+UOWQOodr+YHnwhl1wGaR31kO6MYo=' 'sha256-t+W/MQ9ymTh6JnXQsmBr9ofLVGHcYkFou8tgJws1j9M='; style-src 'sha256-TLMbA1b7vssUDTEpYK73+J6pSv43PSDopxa6rKCzhY0='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Free clip review — PreflightClips</title>
 <script>
@@ -359,7 +359,7 @@ footer p{margin:18px 0 0;max-width:90ch}
       <li class="glass"><b>Black bars and small pictures</b><span>A video in a small box on a blurred background looks tiny on a phone.</span></li>
       <li class="glass"><b>The first second</b><span>A black or still opening gets scrolled past.</span></li>
       <li class="glass"><b>Sound</b><span>A clip exported without audio.</span></li>
-      <li class="glass"><b>What TikTok covers</b><span>Its tabs, buttons and caption, shaded on your own frame.</span></li>
+      <li class="glass"><b>What TikTok covers</b><span>Its tabs, buttons and caption, shaded on your own frame. A tag, title or logo that sits under them gets flagged.</span></li>
       <li class="glass"><b>Your file stays with you</b><span>Everything runs in your browser. Nothing is uploaded.</span></li>
     </ul>
   </section>
@@ -613,7 +613,58 @@ var Review = (function(){
     return { black: black, still: !black && change != null && change < 1.5, change: change };
   }
 
-  /* The review. info: {w, h, dur, bars?: {top, bottom, left, right} (editor.js bars()), picture?, opening?, sound?: 'none' | 'ok' | null}
+  /* Text, tags and logos that stay put through the clip and sit where TikTok draws its tabs, buttons or caption.
+     A pixel is part of such an overlay when it is a sharp edge in nearly every frame and keeps its brightness. An area
+     is flagged only when it has clearly more of these than a typical row of the rest of the frame (so a still scene,
+     like the wall behind a facecam that fills the frame, is not taken for text). Only for 9:16 frames.
+     Returns [{id: 'top' | 'right' | 'bottom', x, y, w, h}] with the box in 0..1 of the frame, or null when it cannot
+     tell (too few frames, or a clip where nothing changes). */
+  function overlays(frames){
+    frames = (frames || []).filter(function(f){ return mean(f) >= 14; });
+    if (frames.length < 4) return null;
+    var w = frames[0].w, h = frames[0].h;
+    frames = frames.filter(function(f){ return f.w === w && f.h === h; });
+    if (frames.length < 4 || Math.abs(w / h - 9 / 16) > 0.03) return null;
+    var n = frames.length, N = w * h, lo = new Uint8Array(N).fill(255), hi = new Uint8Array(N), edgy = new Uint8Array(N);
+    frames.forEach(function(f){
+      var d = f.data;
+      for (var y = 0; y < h; y++) for (var x = 0; x < w; x++){
+        var i = y * w + x, v = d[i], e = 0;
+        if (v < lo[i]) lo[i] = v; if (v > hi[i]) hi[i] = v;
+        if (x + 1 < w) e = Math.max(e, Math.abs(v - d[i + 1]));
+        if (x > 0) e = Math.max(e, Math.abs(v - d[i - 1]));
+        if (y + 1 < h) e = Math.max(e, Math.abs(v - d[i + w]));
+        if (y > 0) e = Math.max(e, Math.abs(v - d[i - w]));
+        if (e >= 45) edgy[i]++;
+      }
+    });
+    /* the clip has to change at all, or nothing can be told apart from the picture */
+    var moving = 0;
+    for (var i = 0; i < N; i++) if (hi[i] - lo[i] > 40) moving++;
+    if (moving < 0.03 * N) return null;
+    var need = Math.max(3, n - 1), out = [];
+    function isStatic(i){ return edgy[i] >= need && hi[i] - lo[i] <= 35; }
+    /* a typical row outside the covered areas: the median share of overlay pixels per row (left of the button strip) */
+    var top = Math.round(TIKTOK[0].h / H * h), bottom = h - Math.round(TIKTOK[2].h / H * h), right = w - Math.round(TIKTOK[1].w / W * w), shares = [];
+    for (var ry = top; ry < bottom; ry++){ var c = 0; for (var rx = 0; rx < right; rx++) if (isStatic(ry * w + rx)) c++; shares.push(c / right); }
+    var typical = pct(shares, 0.5);
+    TIKTOK.forEach(function(z){
+      var x0 = Math.round(z.x / W * w), x1 = Math.round((z.x + z.w) / W * w), y0 = Math.round(z.y / H * h), y1 = Math.round((z.y + z.h) / H * h);
+      var stat = 0, all = 0, bx0 = w, by0 = h, bx1 = -1, by1 = -1;
+      for (var y = y0; y < y1; y++) for (var x = x0; x < x1; x++){
+        var i = y * w + x; all++;
+        if (isStatic(i)){
+          stat++;
+          if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y;
+        }
+      }
+      if (stat >= 24 && stat / all >= Math.max(0.02, 4 * typical)) out.push({ id: z.id, x: bx0 / w, y: by0 / h, w: (bx1 + 1 - bx0) / w, h: (by1 + 1 - by0) / h });
+    });
+    return out;
+  }
+
+  /* The review. info: {w, h, dur, bars?: {top, bottom, left, right} (editor.js bars()), picture?, opening?, sound?: 'none' | 'ok' | null,
+     overlays?: (overlays())}
      Returns [{level: 'fix' | 'tip' | 'ok', title, text}] with the fixes first. */
   function points(info){
     var out = [], w = info.w, h = info.h, a = w / h, short = Math.min(w, h);
@@ -632,9 +683,14 @@ var Review = (function(){
     if (o && o.black) add('fix', 'The clip opens on a black frame', 'The first second decides whether people keep watching. Start on the action');
     else if (o && o.still) add('fix', 'Nothing moves in the first second', 'A still opening, like a title card, gets scrolled past. Open on the most exciting moment');
     if (info.sound === 'none') add('fix', 'No sound', 'Most campaigns expect the original audio, and a silent clip holds attention worse. Check that the sound was exported');
+    var WHERE = { top: "under TikTok's top tabs", right: "under TikTok's like and share buttons", bottom: "where TikTok shows the caption and username" };
+    var ov = info.overlays || [];
+    ov.forEach(function(z){
+      add('fix', 'Text or a logo sits ' + WHERE[z.id], 'It stays on screen the whole clip, so it gets covered. If it is a tag, a title or a logo the campaign asks for, move it out of the shaded area (outlined in the preview)');
+    });
 
     if (short >= 720 && short < 1080) add('tip', 'Resolution ' + w + '×' + h, 'Fine for most campaigns. If the brief asks for 1080×1920, export at that size');
-    add('tip', 'Keep text out of the shaded areas', "TikTok's tabs, buttons and caption cover them. Check the preview");
+    if (!ov.length) add('tip', 'Keep text out of the shaded areas', "TikTok's tabs, buttons and caption cover them. Check the preview");
     if (info.dur > 0) add('tip', 'Length ' + Math.round(info.dur) + ' s', 'Check the length limit in your campaign brief');
     if (!out.some(function(x){ return x.level === 'fix'; })) out.unshift({ level: 'ok', title: 'No problems found in the file', text: 'Frame, picture size, opening and sound look right' });
     return out;
@@ -665,7 +721,7 @@ var Review = (function(){
     return any ? out : null;
   }
 
-  return { picture: picture, realBars: realBars, opening: opening, points: points, fit: fit, tracks: tracks, detail: detail, TIKTOK: TIKTOK, W: W, H: H };
+  return { picture: picture, realBars: realBars, opening: opening, overlays: overlays, points: points, fit: fit, tracks: tracks, detail: detail, TIKTOK: TIKTOK, W: W, H: H };
 })();
 var barsOf = (function(){
   function bars(frames){
@@ -762,6 +818,13 @@ var ReviewUI = function(hit){
   function show(file, meta, frames, snd){
     var n = 8, even = frames.slice(0, n).filter(Boolean);
     var info = { w: meta.w, h: meta.h, dur: meta.dur, bars: Review.realBars(even, barsOf(even)), picture: Review.picture(even), opening: Review.opening(frames[n], frames[n + 1]), sound: snd };
+    try { info.overlays = Review.overlays(even); } catch (e) {}
+    /* outline what sits under TikTok's buttons on the preview (overlays are only found on 9:16, which fills it) */
+    (info.overlays || []).forEach(function(z){
+      var x = cv.getContext('2d'), CW = cv.width, CH = cv.height, pad = 6;
+      x.setLineDash([]); x.lineWidth = 4; x.strokeStyle = 'rgb(255,214,10)';
+      x.strokeRect(z.x * CW - pad, z.y * CH - pad, z.w * CW + 2 * pad, z.h * CH + 2 * pad);
+    });
     var pts = Review.points(info), fixes = pts.filter(function(p){ return p.level === 'fix'; }).length;
     el('rv-h').textContent = fixes ? (fixes === 1 ? '1 thing to fix' : fixes + ' things to fix') : 'Looks good';
     el('rv-name').textContent = file.name + ', ' + meta.w + '×' + meta.h + ', ' + Math.round(meta.dur * 10) / 10 + ' s';
