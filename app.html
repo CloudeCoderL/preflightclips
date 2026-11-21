@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-Xza24e9ExwphFZFSGRmKUMXU3TaC8Lo58rjnKRx4g70=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-EywRG0HgLZvQ6K0/O6/NcK0fYL44ZRqbiUyRlr6tkJE=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-8NOHPe2RlSOIKfBn3ImWSFWM6FQ3IuzOWJv9CtvNdfE=' 'sha256-LBPkfI8JxyShi0p/ADp9HnubBI8OalbpvSXL9wZIlBQ=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-653sxtNEZ5+4VWDdyOCbSlI3gJDAGWedpVywQUOQrzE='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' blob: 'sha256-Xza24e9ExwphFZFSGRmKUMXU3TaC8Lo58rjnKRx4g70=' 'sha256-tsnIzpHM1+62MQeEhsboJscKejrFSWdrZ43TCxlMND0=' 'sha256-3gd6ximOVSKwnZERJa2SZzmQ4kNrFO72+jH/C5+2Ats=' 'sha256-EywRG0HgLZvQ6K0/O6/NcK0fYL44ZRqbiUyRlr6tkJE=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-8NOHPe2RlSOIKfBn3ImWSFWM6FQ3IuzOWJv9CtvNdfE=' 'sha256-oFkoSxiE6ZJ4kmOm2JFulvv1GGs7UK2vq5tl0DuJ3PY=' https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ 'wasm-unsafe-eval'; style-src 'sha256-VcPJnKmsCpNy1P95ep7jlQYxE8LC/NIDfsbSLX8dEF0='; font-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self' blob: https://preflightclips-access.preflight-ebc.workers.dev https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/ https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — check your clip against the campaign brief</title>
 <script>
@@ -830,6 +830,27 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
 .need,.vhero{container-type:inline-size}
 @container (max-width:560px){ .demo{grid-template-columns:minmax(0,1fr)} .demo .dph{width:min(100%,210px);margin:0 auto} }
 .demo .seg{display:flex;flex-wrap:wrap;border-radius:18px} .demo .seg button{white-space:nowrap}
+/* After posting: the example strip; For teams: the example table */
+.demo-strip{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px;border-radius:var(--r-card);border:1px solid var(--edge);background:linear-gradient(160deg,rgba(10,132,255,.18),rgba(255,255,255,.03))}
+.demo-strip b{display:block;font-size:15px;font-weight:650} .demo-strip span{display:block;color:var(--muted);font-size:14px;line-height:1.4;margin-top:2px}
+.demo-strip .ds-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(10,132,255,.2);color:#4BA6FF} .demo-strip .ds-ic svg{width:22px;height:22px}
+@container (max-width:520px){ .demo-strip{grid-template-columns:auto minmax(0,1fr)} .demo-strip .btn{grid-column:1 / -1} }
+#panel-post,#panel-team{container-type:inline-size}
+.demo-wide{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:var(--r-card);border:1px solid var(--edge);background:rgba(255,255,255,.035)}
+.demo-wide .dm-k b{color:var(--ink)}
+/* the review table in a narrow column (the example and the real one): one card per link */
+@container (max-width:560px){
+  #panel-team .rtable,#panel-team .rtable tbody,#panel-team .rtable tr,#panel-team .rtable td{display:block}
+  #panel-team .rtable thead{display:none}
+  #panel-team .rtable tr{padding:11px 12px;border-top:1px solid var(--faint)} #panel-team .rtable tr:first-child{border-top:0}
+  #panel-team .rtable td{padding:0;border:0;min-width:0}
+  #panel-team .rtable td:nth-child(1){display:none}
+  #panel-team .rtable td:nth-child(2),#panel-team .rtable td:nth-child(3),#panel-team .rtable td:nth-child(4){display:inline;margin-right:10px;font-size:13px;color:var(--muted)}
+  #panel-team .rtable td:nth-child(2){color:var(--ink);font-weight:600}
+  #panel-team .rtable td:nth-child(5){margin-top:5px;font-size:14px;line-height:1.4}
+  #panel-team .rtable tr.flag{box-shadow:inset 3px 0 0 var(--stop,#FF453A)}
+}
+@container (max-width:420px){ .demo .seg button{padding:6px 10px;font-size:13px} .demo .dph{width:min(100%,180px)} }
 </style>
 </head>
 <body>
@@ -1139,6 +1160,11 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
       </div>
 
       <div class="panel" id="panel-post" role="tabpanel" aria-labelledby="tab-post" hidden>
+      <div class="demo-strip" id="dm-post">
+        <span class="ds-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>
+        <div><b>See it on an example</b><span>A TikTok posted 14 minutes ago with 12,000 views: the submit timer, what it earns and how many views a goal takes.</span></div>
+        <button type="button" class="btn" id="dmp-go">Fill in the example</button>
+      </div>
       <div class="field">
         <label for="post">Link to the live post</label>
         <input type="url" id="post" placeholder="https://www.tiktok.com/@you/video/…" inputmode="url" autocomplete="off" spellcheck="false" aria-describedby="post-status">
@@ -1172,6 +1198,11 @@ body.has-tabbar .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
 
       <div class="panel" id="panel-team" role="tabpanel" aria-labelledby="tab-team" hidden>
       <div id="lock-team" class="lock" hidden></div>
+      <div class="demo-wide" id="dm-team" data-free>
+        <p class="dm-k"><b>Example.</b> Six post links from clippers, in a campaign that gives 60 minutes to submit a link. The table reads when each post went up from the link itself and flags what needs a look.</p>
+        <div class="tablewrap"><table class="rtable"><thead><tr><th>#</th><th>Platform</th><th>Posted</th><th>Link</th><th>Notes</th></tr></thead><tbody id="dmt-body"></tbody></table></div>
+        <div class="actions"><button type="button" class="btn" id="dmt-fill">Try it with these links</button><span class="hint" id="dmt-sum"></span></div>
+      </div>
       <div class="field">
         <label for="t-links">Post links from your clippers <span class="opt">(one per line)</span></label>
         <textarea id="t-links" spellcheck="false" placeholder="https://www.tiktok.com/@clipper/video/…&#10;https://www.instagram.com/reel/…, 2026-11-11 19:50"></textarea>
@@ -4393,10 +4424,10 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
   var teamRows = [];
   function windowMinutes(){ var m = 0; (campaign().items || []).forEach(function(i){ if (Logic.isPost(i) && Logic.applies(i, S.platform)) m = i.minutes; }); return m; }
   function when(ms){ var d = new Date(ms); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
-  function renderTeam(){
-    var win = windowMinutes(), day = el('t-start').value, start = day ? new Date(day + 'T00:00:00').getTime() : 0;
-    var rows = Logic.reviewLinks(el('t-links').value, { minutes: win, start: start }), tb = el('t-body'), flagged = 0;
-    tb.textContent = ''; teamRows = [['#', 'Platform', 'Posted', 'Link', 'Notes']];
+  /* the review table's rows for some link lines, into tbody tb; returns {rows, flagged, table} (table: for copying) */
+  function teamTable(text, win, start, tb){
+    var rows = Logic.reviewLinks(text, { minutes: win, start: start }), flagged = 0, table = [['#', 'Platform', 'Posted', 'Link', 'Notes']];
+    tb.textContent = '';
     rows.forEach(function(r, i){
       var notes = [], bad = false;
       if (r.status === 'not_a_link'){ notes.push('Not a link'); bad = true; }
@@ -4417,8 +4448,14 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
         if (ci === 4) (notes.length ? notes : ['Nothing flagged']).forEach(function(nt, ni){ if (ni) td.appendChild(document.createTextNode(' ')); td.appendChild(node('span', null, nt + (notes.length > 1 ? '.' : ''))); });
         row.appendChild(td);
       });
-      tb.appendChild(row); teamRows.push([cells[0], cells[1], cells[2], r.link, cells[4]]);
+      tb.appendChild(row); table.push([cells[0], cells[1], cells[2], r.link, cells[4]]);
     });
+    return { rows: rows, flagged: flagged, table: table };
+  }
+  function renderTeam(){
+    var win = windowMinutes(), day = el('t-start').value, start = day ? new Date(day + 'T00:00:00').getTime() : 0;
+    var t = teamTable(el('t-links').value, win, start, el('t-body')), rows = t.rows, flagged = t.flagged;
+    teamRows = t.table;
     el('t-wrap').hidden = !rows.length; el('t-copy').hidden = !rows.length; el('t-status').textContent = '';
     el('t-sum').textContent = !rows.length ? '' : plural(rows.length, 'line', 'lines') + ' read, ' + (flagged ? flagged + ' to look at' : 'nothing flagged') + '.' + (win ? ' This campaign gives ' + win + ' min to submit a link.' : '');
   }
@@ -5236,6 +5273,47 @@ var PAYMENTS = {"_note": "Plans shown on the page. access.api + access.public_ke
       }
       el('dmc-list').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; pressOne(el('dmc-list'), b); pick(+b.getAttribute('data-m')); });
       pick(0);
+    }
+
+    /* After posting and For teams: example links. A TikTok video id carries the time it was posted (its top 32 bits
+       are Unix seconds), so an example made now reads as "posted N minutes ago". */
+    function tiktok(user, minAgo){
+      if (typeof BigInt !== 'function') return 'https://www.tiktok.com/@' + user + '/video/7300000000000000000';
+      var secs = BigInt(Math.floor((Date.now() - minAgo * 60000) / 1000)), low = BigInt(Math.floor(Math.random() * 4294967295));
+      return 'https://www.tiktok.com/@' + user + '/video/' + ((secs << BigInt(32)) | low).toString();
+    }
+    function stamp(minAgo){ var d = new Date(Date.now() - minAgo * 60000); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+    function setVal(id, v){ var i = el(id); i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); }
+    if (el('dmp-go')) el('dmp-go').addEventListener('click', function(){
+      setVal('post', tiktok('clipper.example', 14));
+      if (!el('e-rate').value) setVal('e-rate', '2.5');
+      if (!el('e-min').value) setVal('e-min', '5');
+      setVal('e-views', '12000'); setVal('g-want', '100');
+      el('post').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    var dmtBody = el('dmt-body');
+    if (dmtBody){
+      var one = tiktok('clipper.one', 48), demoLinks = [
+        one + ', ' + stamp(36),
+        tiktok('clipper.two', 180) + ', ' + stamp(90),
+        'https://www.youtube.com/shorts/aB3dE5fG7hI, ' + stamp(5),
+        one + ', ' + stamp(20),
+        tiktok('clipper.four', 60 * 24 * 5) + ', ' + stamp(60 * 24 * 5 - 15),
+        'https://www.tiktok.com/@clipper.five'
+      ].join('\n'), demoStart = Date.now() - 3 * 86400000;
+      var dt = teamTable(demoLinks, 60, demoStart, dmtBody);
+      /* the example sits in a narrow column: show each link short (who and the end of the id) */
+      [].forEach.call(dmtBody.querySelectorAll('tr'), function(tr){
+        var c = tr.children[3]; if (!c) return;
+        var m = /@([\w.]+)(?:\/video\/\d*(\d{4}))?/.exec(c.textContent), y = /youtube\.com\/shorts\/(\w{4})/.exec(c.textContent);
+        c.textContent = m ? '@' + m[1] + (m[2] ? ' …' + m[2] : ' (profile)') : y ? 'shorts/' + y[1] + '…' : c.textContent;
+      });
+      el('dmt-sum').textContent = dt.rows.length + ' lines read, ' + dt.flagged + ' to look at.';
+      el('dmt-fill').addEventListener('click', function(){
+        if (el('panel-team').classList.contains('is-locked')){ showPricing(); return; }
+        var d = new Date(demoStart); el('t-start').value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+        setVal('t-links', demoLinks); el('t-links').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
     }
   })();
 
