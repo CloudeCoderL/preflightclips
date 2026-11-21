@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%230A84FF%27/%3E%3Cpath d=%27M17 34l10 10 20-24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%278%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-opWGeAA+0+5PT5+UOWQOodr+YHnwhl1wGaR31kO6MYo=' 'sha256-WWIRk3/ITAb4LLQrv2kQNRk4ZAEb3vco5ILS6Nm/h3U='; style-src 'sha256-XqZuJWFP+t3ad/BNcYaS/C2o6WD09/K1p3+I0BJp6K4='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-GabVFrTlCqxY+EDHEmX6MnhqV4UTx1RtOkA84nU5IsM=' 'sha256-opWGeAA+0+5PT5+UOWQOodr+YHnwhl1wGaR31kO6MYo=' 'sha256-WWIRk3/ITAb4LLQrv2kQNRk4ZAEb3vco5ILS6Nm/h3U='; style-src 'sha256-/ttLbb3/U2behbQD+7pE5STYLwLf+Kp8IxjreOdeihQ='; img-src 'self' data: blob:; media-src 'self' blob:; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>PreflightClips — the clip editor that knows the brief</title>
 <script>
@@ -270,6 +270,7 @@ footer p{margin:18px 0 0;max-width:90ch}
 #rv-status{min-height:1.5em;margin-top:14px}
 .rv-out{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-items:start;margin-top:30px}
 @media (min-width:860px){ .rv-out{grid-template-columns:300px minmax(0,1fr)} }
+.rv-out[hidden]{display:none}
 .rv-prev{padding:12px;border-radius:28px;max-width:300px;margin:0 auto}
 .rv-prev canvas{display:block;width:100%;height:auto;border-radius:18px;background:#000}
 .rv-leg{display:flex;gap:8px;align-items:center;margin:10px 4px 2px;font-size:13px;color:var(--muted)}
