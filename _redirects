@@ -1,3 +1,5 @@
 # short links (Cloudflare static assets). /r is the free clip review, marked as coming from TikTok posts
 /r /review.html?s=tt 302
 /review /review.html 301
+# personal checklist links for agencies we write to (sales/demo_links/links.md); ?s=li marks the visit as from LinkedIn
+/fanout /app.html?s=li#b=eyJuIjoiQ2FzaCBXYWxrZXIgQ2xpcHBpbmcgwrcgRmFuT3V0IiwibG8iOjEwLCJtIjpbIkxpbmsgaW4gYmlvOiBjbG9zZXdpdGhjYXNoLm15a2FqYWJpLmNvbS9jbG9zZS13aXRoLWNhc2giLCJPcmlnaW5hbCBlZGl0OiBubyByZXBvc3RzIG9yIGR1cGxpY2F0ZWQgY29udGVudCIsIlBvc3RlZCBvbiBUaWtUb2sgb3IgSW5zdGFncmFtIiwiVGhlIGNsaXAgbWFrZXMgdmlld2VycyB3YW50IHRvIGNsaWNrIHRocm91Z2ggdG8gaGlzIHByb2dyYW0sIG5vdCBqdXN0IHdhdGNoIl19 302
