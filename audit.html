@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2064%2064%27%3E%3Crect%20width=%2764%27%20height=%2764%27%20rx=%2716%27%20fill=%27%232E2F34%27/%3E%3Cpath%20d=%27M16%2025v-5a4%204%200%200%201%204-4h5M39%2016h5a4%204%200%200%201%204%204v5M48%2039v5a4%204%200%200%201-4%204h-5M25%2048h-5a4%204%200%200%201-4-4v-5%27%20fill=%27none%27%20stroke=%27white%27%20stroke-width=%275.5%27%20stroke-linecap=%27round%27/%3E%3Ccircle%20cx=%2732%27%20cy=%2732%27%20r=%276%27%20fill=%27white%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-ogt5NlJTdiFxzBu6+UJJGeo5txa5qqXFeinBXlxPhIs=' 'sha256-/H9HZ1vNuT+nUEj6VCFb24QpTInypaJZk4Ia8d2SSHg=' 'sha256-jlM2W8Ok8Gzr9m/65Eu/Vy3F452JOtMhIi1r9Eq0hAE='; style-src 'sha256-eLVqqIIWCXVlMetE9SjTK5YHM8E5brrIJ1gsj9doAUg='; img-src 'self' data:; media-src 'self'; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-ogt5NlJTdiFxzBu6+UJJGeo5txa5qqXFeinBXlxPhIs=' 'sha256-/H9HZ1vNuT+nUEj6VCFb24QpTInypaJZk4Ia8d2SSHg=' 'sha256-7mFluutNezFj7FzRp8UmwqN0Hu9yTuYhQeK7M281cz0='; style-src 'sha256-eLVqqIIWCXVlMetE9SjTK5YHM8E5brrIJ1gsj9doAUg='; img-src 'self' data:; media-src 'self'; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Free brief audit for clipping agencies — PreflightClips</title>
 <script>
@@ -765,10 +765,10 @@ var Brief = (function(){
     gaps.textContent = ''; auto.textContent = '';
     var n = 0;
     function gap(kind, t, s){ gaps.appendChild(li(kind, t, s)); n++; }
-    var paid = /\b(brand|product|app|download|sale|promo|sponsor|paid|buy|shop|code|link in bio|movie|film|song|album|game|launch)\b/i.test(text);
+    var paid = /\b(brand|product|app|download|sale|promo|sponsor|paid|buy|shop|code|link in bio|movie|film|song|album|game|launch|earn|per 1k|per thousand|cpm|netflix|special|episode|series|show)\b|\$\s?\d/i.test(text);
     if (!b.d) gap(paid ? 'x' : 'w', 'No #ad or sponsored rule', paid ? 'These clips promote something and are paid per view; TikTok and Instagram expect a disclosure, and clips without one can be pulled.' : 'If clips are paid promotion, ask for #ad or the platform\'s paid partnership label.');
     if (!b.a) gap('x', 'No 9:16 rule', 'Wide stream, podcast or film footage posted as-is shows black bars and small text.');
-    if (!b.t && !(b.p || []).length) gap('x', 'Nothing required in the caption', 'No tag, handle or phrase, so a clip can get views without naming what it promotes.');
+    if (!b.t && !(b.p || []).length) gap(b.d ? 'w' : 'x', b.d ? 'No brand name or tag required in the caption' : 'Nothing required in the caption', 'No tag, handle or phrase, so a clip can get views without naming what it promotes.');
     else if (!b.t && !(b.p || []).some(function(p){ return p.charAt(0) === '@'; })) gap('w', 'No account to tag', 'Name the exact @handle if viewers should find the account.');
     var onScreen = /\b(on[- ]screen|overlay|logo|watermark|text on|song name on|caption on the video|lyrics)\b/i.test(text) || /\bon (?:the )?(?:video|screen|clip)\b|\b(?:at|on) the bottom\b/i.test(text);
     var badSpot = /\b(bottom|lower third|bottom center|bottom centre|right side|right edge|corner|at the end)\b/i.test(text);
@@ -779,21 +779,22 @@ var Brief = (function(){
     if (/\bcomment\b/i.test(text) && /\b(pin|pinned|song name|link)\b/i.test(text)) gap('w', 'A rule that lives in a comment', 'A caption can be checked before posting; a comment is added after, so nobody checks it.');
     if (!n) gaps.appendChild(li('ok', 'No common gaps found', 'This brief already covers disclosure, format, caption and placement.'));
     $('au-gapcount').textContent = n ? n + (n === 1 ? ' gap' : ' gaps') + ' a reviewer will run into' : 'Looks solid';
-    var a = 0;
-    function ok(t){ auto.appendChild(li('ok', t, 'Checked automatically before the clip is posted.')); a++; }
-    if (b.t) ok('@' + b.t + ' tagged in the caption');
-    (b.p || []).slice(0, 6).forEach(function(p){ ok('"' + p + '" in the caption'); });
-    if (b.d) ok(b.d.join(' or ') + ' in the caption');
-    if (b.a) ok('Vertical 9:16' + (b.k ? ', no black bars' : ''));
-    if (b.lo != null || b.hi != null) ok('Length ' + (b.lo != null && b.hi != null ? b.lo + ' to ' + b.hi + ' s' : b.lo != null ? 'at least ' + b.lo + ' s' : 'up to ' + b.hi + ' s'));
-    if (b.h != null) ok('No more than ' + b.h + ' other hashtags');
-    var m = (b.m || []).length;
-    if (m) auto.appendChild(li('box', m + (m === 1 ? ' rule becomes a tick box' : ' rules become tick boxes'), 'The clipper confirms each one before submitting.'));
-    if (!a && !m) auto.appendChild(li('box', 'Add a tag, #ad or 9:16 and they are checked automatically', 'Edit the brief above and check again.'));
     out.hidden = false;
-    var withFix = JSON.parse(JSON.stringify(b));
-    if (!withFix.a) withFix.a = 1; if (!withFix.k) withFix.k = 1;
-    if (!withFix.d && paid){ withFix.d = ['#ad', '#sponsored']; withFix.w = 'any'; }
+    var withFix = JSON.parse(JSON.stringify(b)), added = {};
+    if (!withFix.a){ withFix.a = 1; added.a = 1; } if (!withFix.k){ withFix.k = 1; added.k = 1; }
+    if (!withFix.d && paid){ withFix.d = ['#ad', '#sponsored']; withFix.w = 'any'; added.d = 1; }
+    var AUTO = 'Checked automatically before the clip is posted.', ADDED = 'Added by us because the brief leaves it out. Checked automatically; remove it in the Team tab if you don\'t want it.';
+    function ok(t, isAdded){ auto.appendChild(li('ok', t, isAdded ? ADDED : AUTO)); }
+    if (withFix.t) ok('@' + withFix.t + ' tagged in the caption');
+    (withFix.p || []).slice(0, 6).forEach(function(p){ ok('"' + p + '" in the caption'); });
+    if (withFix.d) ok(withFix.d.join(' or ') + ' in the caption', added.d);
+    ok('Vertical 9:16, no black bars', added.a || added.k);
+    if (withFix.lo != null || withFix.hi != null) ok('Length ' + (withFix.lo != null && withFix.hi != null ? withFix.lo + ' to ' + withFix.hi + ' s' : withFix.lo != null ? 'at least ' + withFix.lo + ' s' : 'up to ' + withFix.hi + ' s'));
+    if (withFix.h != null) ok('No more than ' + withFix.h + ' other hashtags');
+    ok('Text clear of TikTok\'s caption and buttons', false);
+    var m = (withFix.m || []).length;
+    if (m) auto.appendChild(li('box', m + (m === 1 ? ' rule becomes a tick box' : ' rules become tick boxes'), 'The clipper confirms each one before submitting.'));
+    else auto.appendChild(li('box', 'Your other rules become tick boxes', 'Add the brand tag or phrase in the Team tab and it is checked automatically too.'));
     var packed = Brief.pack(withFix);
     if (packed.length > Brief.MAX_LINK){ box.hidden = true; msg.textContent = 'This brief is too long for one link. Send it to us and we build it for you.'; return; }
     var link = 'https://preflightclips.com/app.html?s=au#b=' + packed;
