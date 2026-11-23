@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2064%2064%27%3E%3Crect%20width=%2764%27%20height=%2764%27%20rx=%2716%27%20fill=%27%232E2F34%27/%3E%3Cpath%20d=%27M16%2025v-5a4%204%200%200%201%204-4h5M39%2016h5a4%204%200%200%201%204%204v5M48%2039v5a4%204%200%200%201-4%204h-5M25%2048h-5a4%204%200%200%201-4-4v-5%27%20fill=%27none%27%20stroke=%27white%27%20stroke-width=%275.5%27%20stroke-linecap=%27round%27/%3E%3Ccircle%20cx=%2732%27%20cy=%2732%27%20r=%276%27%20fill=%27white%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-ogt5NlJTdiFxzBu6+UJJGeo5txa5qqXFeinBXlxPhIs=' 'sha256-/H9HZ1vNuT+nUEj6VCFb24QpTInypaJZk4Ia8d2SSHg=' 'sha256-EBCj8f5vpt7OyW7bFVjkYNAZHXhGPTlweyfE/AiZ3hM='; style-src 'sha256-eLVqqIIWCXVlMetE9SjTK5YHM8E5brrIJ1gsj9doAUg='; img-src 'self' data:; media-src 'self'; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-ogt5NlJTdiFxzBu6+UJJGeo5txa5qqXFeinBXlxPhIs=' 'sha256-/H9HZ1vNuT+nUEj6VCFb24QpTInypaJZk4Ia8d2SSHg=' 'sha256-jlM2W8Ok8Gzr9m/65Eu/Vy3F452JOtMhIi1r9Eq0hAE='; style-src 'sha256-eLVqqIIWCXVlMetE9SjTK5YHM8E5brrIJ1gsj9doAUg='; img-src 'self' data:; media-src 'self'; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Free brief audit for clipping agencies — PreflightClips</title>
 <script>
@@ -770,7 +770,7 @@ var Brief = (function(){
     if (!b.a) gap('x', 'No 9:16 rule', 'Wide stream, podcast or film footage posted as-is shows black bars and small text.');
     if (!b.t && !(b.p || []).length) gap('x', 'Nothing required in the caption', 'No tag, handle or phrase, so a clip can get views without naming what it promotes.');
     else if (!b.t && !(b.p || []).some(function(p){ return p.charAt(0) === '@'; })) gap('w', 'No account to tag', 'Name the exact @handle if viewers should find the account.');
-    var onScreen = /\b(on[- ]screen|overlay|logo|watermark|text on|song name on|caption on the video|lyrics)\b/i.test(text);
+    var onScreen = /\b(on[- ]screen|overlay|logo|watermark|text on|song name on|caption on the video|lyrics)\b/i.test(text) || /\bon (?:the )?(?:video|screen|clip)\b|\b(?:at|on) the bottom\b/i.test(text);
     var badSpot = /\b(bottom|lower third|bottom center|bottom centre|right side|right edge|corner|at the end)\b/i.test(text);
     var safe = /\b(safe zone|above the caption|clear of|not covered|top third|center of the screen)\b/i.test(text);
     if (onScreen && badSpot && !safe) gap('x', 'On-screen text placed where the app covers it', 'On TikTok the bottom ~440 px (caption, username) and the right ~150 px (buttons) sit over the video. Say "top third" or "above the caption".');
