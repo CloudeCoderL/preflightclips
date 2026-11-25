@@ -1,6 +1,7 @@
 # short links (Cloudflare static assets). /r is the free clip review, marked as coming from TikTok posts
 /r /review.html?s=tt 302
-/brands /guides/brand-leads.html?s=li 302
+/brands /brand-leads.html?s=li 302
+/guides/brand-leads.html /brand-leads.html 301
 /d /review.html?s=dc 302
 /rd /review.html?s=rd 302
 /review /review.html 301
