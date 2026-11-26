@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2064%2064%27%3E%3Crect%20width=%2764%27%20height=%2764%27%20rx=%2716%27%20fill=%27%232E2F34%27/%3E%3Cpath%20d=%27M16%2025v-5a4%204%200%200%201%204-4h5M39%2016h5a4%204%200%200%201%204%204v5M48%2039v5a4%204%200%200%201-4%204h-5M25%2048h-5a4%204%200%200%201-4-4v-5%27%20fill=%27none%27%20stroke=%27white%27%20stroke-width=%275.5%27%20stroke-linecap=%27round%27/%3E%3Ccircle%20cx=%2732%27%20cy=%2732%27%20r=%276%27%20fill=%27white%27/%3E%3C/svg%3E">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-tmlIvirosOHIL1vHw+JlMs+iDbIsLD27+zKh5dw94r4=' 'sha256-/H9HZ1vNuT+nUEj6VCFb24QpTInypaJZk4Ia8d2SSHg=' 'sha256-8BzDuCHbU9k7Zt8weyjb1T3BmadwCbdHac69OTb5OU8='; style-src 'sha256-1u9Nh2+UTmMyrybsHXx8Ezd0ErNQj+XWIAKIMm9uPmA='; img-src 'self' data:; media-src 'self'; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Tdnrtobm94IPOkSb+0ZMYinSyMPKgK5H1QGYZCIMwnw=' 'sha256-tmlIvirosOHIL1vHw+JlMs+iDbIsLD27+zKh5dw94r4=' 'sha256-/H9HZ1vNuT+nUEj6VCFb24QpTInypaJZk4Ia8d2SSHg=' 'sha256-8BzDuCHbU9k7Zt8weyjb1T3BmadwCbdHac69OTb5OU8='; style-src 'sha256-UTKqA0vHKapGJK1FYKlY/c634LzYD9u6J7xl2BpcBaM='; img-src 'self' data:; media-src 'self'; connect-src https://preflightclips-access.preflight-ebc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Clip campaign audit for brands — PreflightClips</title>
 <script>
@@ -362,6 +362,8 @@ footer p{margin:18px 0 0;max-width:90ch}
 .ca-faq{margin-top:26px;max-width:860px;display:flex;flex-direction:column;gap:10px}
 .ca-faq details{padding:16px 20px;border-radius:18px} .ca-faq summary{cursor:pointer;font-weight:700}
 .ca-faq p{margin:10px 0 0;color:var(--muted)}
+.ca-offer{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:rgba(var(--hue),.14)}
+@media (min-width:820px){ .ca-found{grid-template-columns:repeat(4,minmax(0,1fr))} }
 .ca-fine{margin-top:40px;color:var(--faint);font-size:13.5px;max-width:70ch}
 
 :root{--hue:255,176,32}
@@ -400,7 +402,7 @@ footer p{margin:18px 0 0;max-width:90ch}
     <h1 id="h1">See what your clipping budget really paid for.</h1>
     <p class="lede">We check every clip in your campaign: did it follow your brief, does it carry #ad, is it still up after the payout, and do its views look real. You get a clip-by-clip report in 48 hours.</p>
     <div class="cta"><a class="btn main ca-order" href="mailto:preflightclips@gmail.com?subject=Clip%20audit%3A%205%20clips%20free&amp;body=Brand%3A%0ACampaign%20link%3A%0ALinks%20to%205%20clips%20(or%20the%20whole%20list)%3A%0A">Check 5 clips free</a><a class="btn" href="#sample">See a sample report</a></div>
-    <p class="note">Full campaign audit: $149. Or message us on Instagram: <a href="https://ig.me/m/preflightclips" class="ca-order" target="_blank" rel="noopener">@preflightclips</a></p>
+    <p class="note">First 5 brands until Dec 5: full audit $49 (normally $149). Or message us on Instagram: <a href="https://ig.me/m/preflightclips" class="ca-order" target="_blank" rel="noopener">@preflightclips</a></p>
   </section>
 
   <section class="ca-sec" aria-labelledby="h-checks">
@@ -412,6 +414,18 @@ footer p{margin:18px 0 0;max-width:90ch}
       <li class="glass"><h3>Still live</h3><p>Clips deleted or made private after the payout, so you paid for views that no one can see any more.</p></li>
       <li class="glass"><h3>Views that look wrong</h3><p>Views far above likes and comments, or most of them in one hour. We flag them for you to review with your platform; we do not call anything fraud.</p></li>
     </ul>
+  </section>
+
+  <section class="ca-sec" aria-labelledby="h-found">
+    <h2 id="h-found">What we found this week</h2>
+    <p class="sub">We read 31 public TikTok clips from 4 clipping campaigns that are running and paying out right now.</p>
+    <ul class="ca-tiles ca-found">
+      <li><b data-keep>31</b><span>clips checked</span></li>
+      <li class="money"><b data-keep>0</b><span>carried #ad or a paid-partnership label</span></li>
+      <li><b data-keep>2</b><span>with views worth a second look</span></li>
+      <li><b data-keep>4</b><span>campaigns, $3K to $20K budgets</span></li>
+    </ul>
+    <p class="sub">Brands and creators are not named here. If you run one of these campaigns, we will send you your own rows for free.</p>
   </section>
 
   <section class="ca-sec" id="sample" aria-labelledby="h-sample">
@@ -453,7 +467,7 @@ footer p{margin:18px 0 0;max-width:90ch}
         <li>Report within 48 hours of payment</li>
         <li>First 5 clips free, before you pay anything</li>
       </ul>
-      <div class="cta"><a class="btn main" id="ca-pay" href="https://buy.polar.sh/polar_cl_nlRzm5Ejp8c6DK40w7K4wiXmtaRwctkKrfWxB3I4sdp" target="_blank" rel="noopener">Pay $149 by card</a><a class="btn ca-order" href="mailto:preflightclips@gmail.com?subject=Clip%20audit%3A%205%20clips%20free&amp;body=Brand%3A%0ACampaign%20link%3A%0ALinks%20to%205%20clips%20(or%20the%20whole%20list)%3A%0A">Check 5 clips free</a></div></div>
+      <p class="ca-offer">First 5 brands, until Dec 5: the full audit for <b data-keep>$49</b> instead of $149. The code FIRSTAUDIT is already applied on the card button.</p><div class="cta"><a class="btn main" id="ca-pay" href="https://buy.polar.sh/polar_cl_nlRzm5Ejp8c6DK40w7K4wiXmtaRwctkKrfWxB3I4sdp?discount_code=FIRSTAUDIT" target="_blank" rel="noopener">Pay $49 by card</a><a class="btn ca-order" href="mailto:preflightclips@gmail.com?subject=Clip%20audit%3A%205%20clips%20free&amp;body=Brand%3A%0ACampaign%20link%3A%0ALinks%20to%205%20clips%20(or%20the%20whole%20list)%3A%0A">Check 5 clips free</a></div></div>
     </div>
   </section>
 
